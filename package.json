@@ -1,13 +1,13 @@
 {
   "devDependencies": {
-    "vitepress": "2.0.0-alpha.12"
+    "vitepress": "^1.6.4"
   },
   "scripts": {
-    "dev": "vitepress dev config",
-    "build": "vitepress build config",
-    "preview": "vitepress preview config"
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
   },
-  "dependencies": {
+    "dependencies": {
     "@vitejs/plugin-react": "^5.0.4",
     "vitepress-demo-plugin": "^1.5.0"
   }

@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-	srcDir: "..\\docs",
+	srcDir: ".\\docs",
 	title: "Nofly",
 	description: "Vue3 和 React 的组件通用示例",
 	themeConfig: {
@@ -31,7 +31,7 @@ export default defineConfig({
 	markdown: {
 		config(md) {
 			md.use(vitepressDemoPlugin, {
-				demoDir: path.resolve(__dirname, "../../src"),
+				demoDir: path.resolve(__dirname, "../src"),
 			});
 		},
 	},

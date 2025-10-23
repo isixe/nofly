@@ -134,4 +134,4 @@ dist
 .history
 
 # Vitepress
-/config/.vitepress/cache
+.vitepress/cache
