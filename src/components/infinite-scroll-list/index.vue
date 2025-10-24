@@ -38,8 +38,7 @@ onMounted(async () => {
     const box = boxRef.value!
     const wrap = wrapRef.value!
 
-    let originRows: HTMLElement[]
-    originRows = Array.from(box.children) as HTMLElement[]
+    const originRows = Array.from(box.children) as HTMLElement[]
 
     if (originRows.length === 0) return
 

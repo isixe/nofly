@@ -1,11 +1,11 @@
-<demo vue="components/infinite-scroll-list/index.vue" title="无缝循环滚动的列表"/>
+<demo vue="components/infinite-scroll-list/index.vue" react="components/infinite-scroll-list/index.tsx" title="无缝循环滚动的列表"/>
 
 
 ## 快速示例
 
 下面示例展示最简单的用法
 
-<demo vue="views/infinite-scroll-list/index.vue" title="无缝循环滚动的列表"/>
+<demo vue="views/infinite-scroll-list/index.vue" react="views/infinite-scroll-list/index.tsx" title="无缝循环滚动的列表"/>
 
 
 ## 概要
@@ -25,27 +25,23 @@
 
 1) 自定义速度与间隔：
 
-```vue
-<template>
-  <InfiniteScrollList :visibleRows="4" :speed="2" :interval="30">
-    <div v-for="n in 10" :key="n" class="box-row">条目 {{ n }}</div>
-  </InfiniteScrollList>
-</template>
+```HTML
+<InfiniteScrollList :visibleRows="4" :speed="2" :interval="30">
+  <div v-for="n in 10" :key="n" class="box-row">条目 {{ n }}</div>
+</InfiniteScrollList>
 ```
 
 2) 鼠标悬停停止：
 
-```vue
-<template>
-  <InfiniteScrollList :visibleRows="3" :stopOnHover="true">
-    <div v-for="n in 6" :key="n" class="box-row">条目 {{ n }}</div>
-  </InfiniteScrollList>
-</template>
+```HTML
+<InfiniteScrollList :visibleRows="3" :stopOnHover="true">
+  <div v-for="n in 6" :key="n" class="box-row">条目 {{ n }}</div>
+</InfiniteScrollList>
 ```
 
 3) 自定义行内样式（固定高度）示例：如果行高度不一致，建议显式设置高度保证效果稳定。
 
-```vue
+```CSS
 <style scoped>
   .custom-row {
     height: 48px;
@@ -54,12 +50,12 @@
     padding:0 12px
   }
 </style>
+```
 
-<template>
-  <InfiniteScrollList :visibleRows="4">
-    <div v-for="n in 12" :key="n" class="box-row custom-row">消息 {{ n }}</div>
-  </InfiniteScrollList>
-</template>
+```HTML
+<InfiniteScrollList :visibleRows="4">
+  <div v-for="n in 12" :key="n" class="box-row custom-row">消息 {{ n }}</div>
+</InfiniteScrollList>
 ```
 
 ## API
