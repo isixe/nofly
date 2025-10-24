@@ -12,12 +12,15 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 type Props = {
     list: unknown[]
     visibleRows?: number
+    fill?: boolean
     speed?: number
     interval?: number
     stopOnHover?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
+    visibleRows: 3,
+    fill: true,
     speed: 1,
     interval: 40,
     stopOnHover: true,
@@ -41,6 +44,13 @@ onMounted(async () => {
     const originRows = Array.from(box.querySelectorAll('.box-row')) as HTMLElement[]
 
     const curLen = originRows.length
+
+    if (curLen === 0) return
+
+    if (!props.fill && curLen <= props.visibleRows) {
+        wrap.style.height = `${rowHeight * props.visibleRows}px`
+        return
+    }
 
     const targetRounds = Math.max(2, Math.ceil(props.visibleRows / curLen))
     for (let i = 0; i < targetRounds; i++) {
