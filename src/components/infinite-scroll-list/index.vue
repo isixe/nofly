@@ -1,6 +1,6 @@
 <template>
     <div ref="wrapRef" class="seamless-scroll" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-        <div ref="boxRef" class="box-wrap" :style="{ '--row-odd-bg': oddBackground }">
+        <div ref="boxRef" class="box-wrap">
             <slot />
         </div>
     </div>
@@ -38,14 +38,15 @@ onMounted(async () => {
     const box = boxRef.value!
     const wrap = wrapRef.value!
 
-    const firstRow = box.querySelector('.box-row') as HTMLElement
-    if (!firstRow) return
+    let originRows: HTMLElement[]
+    originRows = Array.from(box.children) as HTMLElement[]
+
+    if (originRows.length === 0) return
+
+    const firstRow = originRows[0]
     rowHeight = firstRow.getBoundingClientRect().height
 
-    const originRows = Array.from(box.querySelectorAll('.box-row')) as HTMLElement[]
     const curLen = originRows.length
-
-    if (curLen === 0) return
 
     if (!props.fill && curLen <= props.visibleRows) {
         wrap.style.height = `${rowHeight * props.visibleRows}px`
@@ -58,7 +59,10 @@ onMounted(async () => {
     }
 
     const singleCycleCount = curLen * repeatTimes
-    const firstCycleRows = (Array.from(box.querySelectorAll('.box-row')) as HTMLElement[]).slice(0, singleCycleCount)
+
+    let firstCycleRows: HTMLElement[]
+    firstCycleRows = (Array.from(box.children) as HTMLElement[]).slice(0, singleCycleCount)
+
     firstCycleRows.forEach((row) => box.appendChild(row.cloneNode(true)))
 
     singleCycleHeight = rowHeight * singleCycleCount
