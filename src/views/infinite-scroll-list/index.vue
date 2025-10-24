@@ -4,7 +4,7 @@ const items = Array.from({ length: 8 }).map((_, i) => `Item ${i + 1}`)
 </script>
 
 <template>
-    <InfiniteScrollList :visibleRows="3">
+    <InfiniteScrollList :visibleRows="5">
         <div v-for="(item, idx) in items" :key="idx" class="box-row">
             {{ item }}
         </div>
