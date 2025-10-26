@@ -93,12 +93,12 @@
 
 4) 禁止容器填充：
 
-您可能需要在容器子项目没有到达容器高度时，使其保持静止，而不是使用重复数据一直滚动
+您可能需要在容器子项目没有到达容器宽度时，使其保持静止，而不是使用重复数据一直滚动
 
 ::: code-group
 
 ```vue
-<InfiniteHorizontalScroll :height="800" :fill="false">
+<InfiniteHorizontalScroll :width="1000" :fill="false">
   <div v-for="(item, idx) in items" :key="idx">
     {{ item }}
   </div>
@@ -106,7 +106,7 @@
 ```
 
 ```react
-<InfiniteHorizontalScroll height={800} fill={false}>
+<InfiniteHorizontalScroll width={1000} fill={false}>
 	{items.map((item, index) => (
 		<div key={index}>
 			<span>{item}</span>
@@ -143,7 +143,7 @@
 
 ## 不规则条目
 
-有时候，您可能需要让单个的条目高度不一致，这在容器中是允许的，您可以单独设置条目的样式或者让条目的高度保持适应。
+有时候，您可能需要让单个的条目宽度不一致，这在容器中是允许的，您可以单独设置条目的样式或者让条目的宽度保持适应。
 
 <demo vue="views/infinite-scroll-list/horizontal/horizontal-flex-demo.vue" react="views/infinite-scroll-list/horizontal/horizontal-flex-demo.tsx" title="水平无缝循环滚动的列表-不规则条目示例"/>
 
@@ -160,15 +160,15 @@
 
 ## Slot
 
-- 默认 slot：用于渲染行内容。默认获取的行内容会填充到容器高度使其能够保持滚动。
+- 默认 slot：用于渲染行内容。默认获取的行内容会填充到容器宽度使其能够保持滚动。
 
 ## 常见问题
 
-1.条目如何影响滚动和容器
-- 组件通过所有条目的高度计算容器宽度与复制次数。为了防止项目的 margin 重叠导致高度塌陷，容器内部默认了使用 flex 布局。
+1.条目如何影响滚动和容器？  
+- 组件通过所有条目的宽度计算容器宽度与复制次数。为了防止项目的 margin 重叠导致宽度塌陷，容器内部默认了使用 flex 布局。
 
 2.如何保证组件性能？  
 - 组件通过 `setInterval` 控制滚动，较小的 `interval` 和较大的 `step` 会增加重绘频率，请根据需求调整以平衡流畅度和 CPU 使用率。
 
 如何更新数据动态数据？  
-- 如果 slot 内容在运行时动态改变（高度变化或数量显著变化），建议在数据变更后手动触发一次重新渲染（例如通过改变 key 或在父组件 nextTick 后强制刷新组件），以确保复制逻辑基于最新的行高度与数量。
+- 如果 slot 内容在运行时动态改变（宽度变化或数量显著变化），建议在数据变更后手动触发一次重新渲染（例如通过改变 key 或在父组件 nextTick 后强制刷新组件），以确保复制逻辑基于最新的行高度与数量。

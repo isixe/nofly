@@ -5,7 +5,7 @@ const items = Array.from({ length: 8 }).map((_, i) => `Item ${i + 1}`)
 </script>
 
 <template>
-    <InfiniteVerticalScroll :height="100" :scroll="true">
+    <InfiniteVerticalScroll :height="100">
         <div v-for="(item, idx) in items" :key="idx">
             {{ item }}
         </div>
