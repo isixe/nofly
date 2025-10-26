@@ -1,5 +1,5 @@
 <template>
-    <div ref="wrapRef" class="seamless-scroll" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+    <div ref="wrapRef" class="vertical-infinite-scroll" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
         <div ref="boxRef" class="box-wrap">
             <slot />
         </div>
@@ -10,28 +10,40 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 
 type Props = {
-    list: unknown[]
-    visibleRows?: number
+    height?: number | string
     fill?: boolean
-    speed?: number
+    step?: number
     interval?: number
     stopOnHover?: boolean
+    scroll?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    visibleRows: 3,
+    height: 300,
     fill: true,
-    speed: 1,
+    step: 1,
     interval: 40,
     stopOnHover: true,
+    scroll: false,
 })
 
 const wrapRef = ref<HTMLDivElement>()
 const boxRef = ref<HTMLDivElement>()
 
 let timer: number | null = null
-let rowHeight = 0
 let singleCycleHeight = 0
+
+function getElementHeight(element: HTMLElement): number {
+    const rect = element.getBoundingClientRect()
+    const style = window.getComputedStyle(element)
+    const marginTop = parseFloat(style.marginTop)
+    const marginBottom = parseFloat(style.marginBottom)
+    return rect.height + marginTop + marginBottom
+}
+
+function getTotalHeight(elements: HTMLElement[]): number {
+    return elements.reduce((total, el) => total + getElementHeight(el), 0)
+}
 
 onMounted(async () => {
     await nextTick()
@@ -39,34 +51,32 @@ onMounted(async () => {
     const wrap = wrapRef.value!
 
     const originRows = Array.from(box.children) as HTMLElement[]
-
     if (originRows.length === 0) return
 
-    const firstRow = originRows[0]
-    rowHeight = firstRow.getBoundingClientRect().height
+    box.style.overflowY = props.scroll ? "auto" : "hidden"
+    wrap.style.height = typeof props.height === 'number' ? `${props.height}px` : props.height
 
-    const curLen = originRows.length
+    await nextTick()
 
-    if (!props.fill && curLen <= props.visibleRows) {
-        wrap.style.height = `${rowHeight * props.visibleRows}px`
+    const targetHeight = wrap.getBoundingClientRect().height
+    const originTotalHeight = getTotalHeight(originRows)
+
+    if (!props.fill && originTotalHeight <= targetHeight) {
         return
     }
 
-    const repeatTimes = Math.max(1, Math.ceil(props.visibleRows / curLen))
+    const repeatTimes = Math.max(1, Math.ceil(targetHeight / originTotalHeight))
+
     for (let i = 0; i < repeatTimes - 1; i++) {
         originRows.forEach((row) => box.appendChild(row.cloneNode(true)))
     }
 
-    const singleCycleCount = curLen * repeatTimes
+    const singleCycleCount = originRows.length * repeatTimes
 
-    let firstCycleRows: HTMLElement[]
-    firstCycleRows = (Array.from(box.children) as HTMLElement[]).slice(0, singleCycleCount)
-
+    const firstCycleRows = (Array.from(box.children) as HTMLElement[]).slice(0, singleCycleCount)
     firstCycleRows.forEach((row) => box.appendChild(row.cloneNode(true)))
 
-    singleCycleHeight = rowHeight * singleCycleCount
-
-    wrap.style.height = `${rowHeight * props.visibleRows}px`
+    singleCycleHeight = getTotalHeight(firstCycleRows)
 
     startScroll()
 })
@@ -78,7 +88,7 @@ function startScroll() {
     timer = window.setInterval(() => {
         const box = boxRef.value!
 
-        box.scrollTop += props.speed
+        box.scrollTop += props.step
 
         if (singleCycleHeight > 0 && box.scrollTop >= singleCycleHeight) {
             box.scrollTop -= singleCycleHeight
@@ -103,7 +113,7 @@ function handleMouseLeave() {
 </script>
 
 <style scoped>
-.seamless-scroll {
+.vertical-infinite-scroll {
     overflow: hidden;
     position: relative;
 }
@@ -112,6 +122,8 @@ function handleMouseLeave() {
     height: 100%;
     scrollbar-width: none;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .box-wrap::-webkit-scrollbar {

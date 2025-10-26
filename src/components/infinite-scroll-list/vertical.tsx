@@ -1,29 +1,40 @@
 import React, { useRef, useEffect } from "react";
 
-interface SeamlessScrollProps {
-	list: unknown[];
-	visibleRows?: number;
+type InfiniteVerticalScrollProps = {
+	height?: number | string;
 	fill?: boolean;
-	speed?: number;
+	step?: number;
 	interval?: number;
 	stopOnHover?: boolean;
+	scroll?: boolean;
 	children: React.ReactNode;
-}
+};
 
-const SeamlessScroll: React.FC<SeamlessScrollProps> = ({
-	list,
-	visibleRows = 3,
+const InfiniteVerticalScroll: React.FC<InfiniteVerticalScrollProps> = ({
+	height = 300,
 	fill = true,
-	speed = 1,
+	step = 1,
 	interval = 40,
 	stopOnHover = true,
+	scroll = false,
 	children,
 }) => {
 	const wrapRef = useRef<HTMLDivElement>(null);
 	const boxRef = useRef<HTMLDivElement>(null);
 	const timerRef = useRef<number | null>(null);
-	const rowHeightRef = useRef(0);
 	const singleCycleHeightRef = useRef(0);
+
+	const getElementHeight = (element: HTMLElement): number => {
+		const rect = element.getBoundingClientRect();
+		const style = window.getComputedStyle(element);
+		const marginTop = parseFloat(style.marginTop);
+		const marginBottom = parseFloat(style.marginBottom);
+		return rect.height + marginTop + marginBottom;
+	};
+
+	const getTotalHeight = (elements: HTMLElement[]): number => {
+		return elements.reduce((total, el) => total + getElementHeight(el), 0);
+	};
 
 	useEffect(() => {
 		const initScroll = async () => {
@@ -33,38 +44,32 @@ const SeamlessScroll: React.FC<SeamlessScrollProps> = ({
 			if (!box || !wrap) return;
 
 			const originRows = Array.from(box.children) as HTMLElement[];
+			if (originRows.length === 0) return;
 
-			await new Promise((resolve) => setTimeout(resolve, 0));
+			box.style.overflowY = scroll ? "auto" : "hidden";
+			wrap.style.height = typeof height === "number" ? `${height}px` : height;
 
-			const firstRow = originRows[0] as HTMLElement;
-			if (!firstRow) return;
+			const targetHeight = wrap.getBoundingClientRect().height;
+			const originTotalHeight = getTotalHeight(originRows);
 
-			const height = firstRow.getBoundingClientRect().height;
-			rowHeightRef.current = height;
-
-			const curLen = originRows.length;
-			if (curLen === 0) return;
-
-			if (!fill && curLen <= visibleRows) {
-				wrap.style.height = `${height * visibleRows}px`;
+			if (!fill && originTotalHeight <= targetHeight) {
 				return;
 			}
 
-			const repeatTimes = Math.max(1, Math.ceil(visibleRows / curLen));
+			const repeatTimes = Math.max(1, Math.ceil(targetHeight / originTotalHeight));
 
 			for (let i = 0; i < repeatTimes - 1; i++) {
 				originRows.forEach((row) => box.appendChild(row.cloneNode(true)));
 			}
 
-			const singleCycleCount = curLen * repeatTimes;
-			const firstCycleRows = (Array.from(box.querySelectorAll(".box-row")) as HTMLElement[]).slice(0, singleCycleCount);
+			const singleCycleCount = originRows.length * repeatTimes;
+
+			const firstCycleRows = (Array.from(box.children) as HTMLElement[]).slice(0, singleCycleCount);
 
 			firstCycleRows.forEach((row) => box.appendChild(row.cloneNode(true)));
 
-			const cycleHeight = height * singleCycleCount;
+			const cycleHeight = getTotalHeight(firstCycleRows);
 			singleCycleHeightRef.current = cycleHeight;
-
-			wrap.style.height = `${height * visibleRows}px`;
 
 			startScroll();
 		};
@@ -74,7 +79,7 @@ const SeamlessScroll: React.FC<SeamlessScrollProps> = ({
 		return () => {
 			stopScroll();
 		};
-	}, [list, visibleRows, fill, speed, interval]);
+	}, [height, fill, step, interval, children]);
 
 	const startScroll = () => {
 		if (timerRef.current) return;
@@ -83,7 +88,7 @@ const SeamlessScroll: React.FC<SeamlessScrollProps> = ({
 			const box = boxRef.current;
 			if (!box) return;
 
-			box.scrollTop += speed;
+			box.scrollTop += step;
 
 			if (singleCycleHeightRef.current > 0 && box.scrollTop >= singleCycleHeightRef.current) {
 				box.scrollTop -= singleCycleHeightRef.current;
@@ -109,7 +114,7 @@ const SeamlessScroll: React.FC<SeamlessScrollProps> = ({
 	return (
 		<div
 			ref={wrapRef}
-			className="seamless-scroll"
+			className="vertical-infinite-scroll"
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 			style={{
@@ -124,6 +129,8 @@ const SeamlessScroll: React.FC<SeamlessScrollProps> = ({
 						height: "100%",
 						overflow: "hidden",
 						scrollbarWidth: "none",
+						display: "flex",
+						flexDirection: "column",
 					} as React.CSSProperties
 				}>
 				{children}
@@ -132,4 +139,4 @@ const SeamlessScroll: React.FC<SeamlessScrollProps> = ({
 	);
 };
 
-export default SeamlessScroll;
+export default InfiniteVerticalScroll;
