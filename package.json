@@ -13,6 +13,7 @@
 	},
 	"dependencies": {
 		"@vitejs/plugin-react": "^5.1.0",
-		"vitepress-demo-plugin": "^1.5.0"
+		"vitepress-demo-plugin": "^1.5.0",
+		"vitepress-plugin-group-icons": "^1.6.5"
 	}
 }
