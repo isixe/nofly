@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: "快速开始"
-      link: /vertical-infinite-scroll-list
+      link: /infinite-scroll-list/vertical
     - theme: alt
       text: Github
       link: https://github.com/isixe/nofly

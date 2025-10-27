@@ -17,7 +17,7 @@ export default defineConfig({
 		// https://vitepress.dev/reference/default-theme-config
 		nav: [
 			{ text: "首页", link: "/" },
-			{ text: "组件", link: "/vertical-infinite-scroll-list" },
+			{ text: "组件", link: "/infinite-scroll-list/vertical" },
 		],
 
 		sidebar: [
@@ -27,8 +27,8 @@ export default defineConfig({
 					{
 						text: "无缝循环滚动的列表",
 						items: [
-							{ text: "垂直", link: "/vertical-infinite-scroll-list" },
-							{ text: "水平", link: "/horizontal-infinite-scroll-list" },
+							{ text: "垂直", link: "/infinite-scroll-list/vertical" },
+							{ text: "水平", link: "/infinite-scroll-list/horizontal" },
 						],
 					},
 				],
