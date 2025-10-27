@@ -54,7 +54,9 @@ onMounted(async () => {
     if (originItems.length === 0) return
 
     box.style.overflowX = props.scroll ? "auto" : "hidden"
-    wrap.style.width = typeof props.width === 'number' ? `${props.width}px` : props.width
+    if (props.width) {
+        wrap.style.width = typeof props.width === 'number' ? `${props.width}px` : props.width
+    }
     await nextTick()
 
     const targetWidth = wrap.getBoundingClientRect().width

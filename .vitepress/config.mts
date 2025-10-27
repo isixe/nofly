@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
 	srcDir: "./docs",
 	title: "Nofly",
-	description: "Vue3 和 React 的组件通用示例",
+	description: "一个轻量级、无框架的 Vue 3 和 React 组件示例库",
 	themeConfig: {
 		// https://vitepress.dev/reference/default-theme-config
 		nav: [
@@ -30,6 +30,10 @@ export default defineConfig({
 							{ text: "垂直", link: "/infinite-scroll-list/vertical" },
 							{ text: "水平", link: "/infinite-scroll-list/horizontal" },
 						],
+					},
+					{
+						text: "水平平铺的跑马灯",
+						items: [{ text: "水平", link: "/tiled-carousel/horizontal" }],
 					},
 				],
 			},
