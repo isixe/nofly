@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "Nofly"
-  text: "Vue3 和 React 的组件通用示例"
-  tagline: "轻量组件示例库"
+  text: "一个轻量级、无框架的 Vue 3 和 React 组件示例库"
+  tagline: "快速上手，无依赖安装"
   actions:
     - theme: brand
       text: "快速开始"
