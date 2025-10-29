@@ -50,6 +50,7 @@ onMounted(async () => {
     const box = boxRef.value!
     const wrap = wrapRef.value!
 
+    //[A, B, C]
     const originItems = Array.from(box.children) as HTMLElement[]
     if (originItems.length === 0) return
 
@@ -68,13 +69,13 @@ onMounted(async () => {
 
     const repeatTimes = Math.max(1, Math.ceil(targetWidth / originTotalWidth))
 
+    //[A, B, C, A-clone, B-clone, C-clone]
     for (let i = 0; i < repeatTimes - 1; i++) {
         originItems.forEach((item) => box.appendChild(item.cloneNode(true)))
     }
 
-    const singleCycleCount = originItems.length * repeatTimes
-
-    const firstCycleItems = (Array.from(box.children) as HTMLElement[]).slice(0, singleCycleCount)
+    //[A, B, C, A-clone, B-clone, C-clone, A, B, C, A-clone, B-clone, C-clone]
+    const firstCycleItems = (Array.from(box.children) as HTMLElement[])
     firstCycleItems.forEach((item) => box.appendChild(item.cloneNode(true)))
 
     singleCycleWidth = getTotalWidth(firstCycleItems)

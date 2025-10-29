@@ -75,6 +75,7 @@ const InfiniteHorizontalScroll: React.FC<InfiniteHorizontalScrollProps> = ({
 			const wrap = wrapRef.current;
 			if (!box || !wrap) return;
 
+			//[A, B, C]
 			const originItems = Array.from(box.children) as HTMLElement[];
 			if (originItems.length === 0) return;
 
@@ -92,6 +93,7 @@ const InfiniteHorizontalScroll: React.FC<InfiniteHorizontalScrollProps> = ({
 
 			const repeatTimes = Math.max(1, Math.ceil(targetWidth / originTotalWidth));
 
+			//[A, B, C, A-clone, B-clone, C-clone]
 			for (let i = 0; i < repeatTimes - 1; i++) {
 				originItems.forEach((item) => {
 					const clone = item.cloneNode(true) as HTMLElement;
@@ -99,9 +101,9 @@ const InfiniteHorizontalScroll: React.FC<InfiniteHorizontalScrollProps> = ({
 				});
 			}
 
-			const singleCycleCount = originItems.length * repeatTimes;
-			const firstCycleItems = (Array.from(box.children) as HTMLElement[]).slice(0, singleCycleCount);
+			const firstCycleItems = Array.from(box.children) as HTMLElement[];
 
+			//[A, B, C, A-clone, B-clone, C-clone, A, B, C, A-clone, B-clone, C-clone]
 			firstCycleItems.forEach((item) => {
 				const clone = item.cloneNode(true) as HTMLElement;
 				box.appendChild(clone);
