@@ -13,7 +13,9 @@ export default defineConfig({
 	srcDir: "./docs",
 	title: "Nofly",
 	description: "一个轻量级、无框架的 Vue 3 和 React 组件示例库",
+	head: [["link", { rel: "icon", href: "/favicon.ico" }]],
 	themeConfig: {
+		logo: "/favicon.ico",
 		// https://vitepress.dev/reference/default-theme-config
 		nav: [
 			{ text: "首页", link: "/" },

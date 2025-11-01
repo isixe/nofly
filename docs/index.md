@@ -6,6 +6,9 @@ hero:
   name: "Nofly"
   text: "一个轻量级、无框架的 Vue 3 和 React 组件示例库"
   tagline: "快速上手，无依赖安装"
+  image:
+    src: /favicon.ico
+    alt: Nofly
   actions:
     - theme: brand
       text: "快速开始"
