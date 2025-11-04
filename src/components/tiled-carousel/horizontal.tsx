@@ -1,18 +1,26 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
-type HorizontalTiledCarouselProps = {
-	itemWidth?: number;
+type Props = {
+	itemWidth?: number | string;
 	gap?: number;
 	autoplay?: boolean;
 	interval?: number;
 	showArrows?: boolean;
 	showIndicator?: boolean;
-	arrowSize?: number;
+	arrowSize?: number | string;
 	initialIndex?: number;
-	children: React.ReactNode;
+	children?: React.ReactNode;
 };
 
-const HorizontalTiledCarousel: React.FC<HorizontalTiledCarouselProps> = ({
+type LayoutCache = {
+	viewportWidth: number;
+	itemWidthPx: number;
+	leftOffset: number;
+};
+
+const cloneOffset = 2;
+
+const HorizontalTiledCarousel: React.FC<Props> = ({
 	itemWidth = 60,
 	gap = 16,
 	autoplay = false,
@@ -23,230 +31,306 @@ const HorizontalTiledCarousel: React.FC<HorizontalTiledCarouselProps> = ({
 	initialIndex = 0,
 	children,
 }) => {
-	const viewportRef = useRef<HTMLDivElement>(null);
-	const trackRef = useRef<HTMLDivElement>(null);
-	const [activeIndex, setActiveIndex] = useState(0);
-	const [currentRealIndex, setCurrentRealIndex] = useState(0);
-	const [isTransitioning, setIsTransitioning] = useState(false);
-	const autoplayTimerId = useRef<number | null>(null);
+	const viewportRef = useRef<HTMLDivElement | null>(null);
+	const trackRef = useRef<HTMLDivElement | null>(null);
 
-	const itemList = React.Children.toArray(children);
-	const cloneOffset = 2;
+	const [layoutCache, setLayoutCache] = useState<LayoutCache>({ viewportWidth: 0, itemWidthPx: 0, leftOffset: 0 });
+	const [originItems, setOriginItems] = useState<React.ReactNode[]>([]);
 
-	const displayList = itemList.length <= 1 ? itemList : [...itemList.slice(-2), ...itemList, ...itemList.slice(0, 2)];
+	const [curRealIndex, setCurRealIndex] = useState<number>(0);
+	const [curVirtualIndex, setCurVirtualIndex] = useState<number>(cloneOffset);
 
-	const computedItemWidth = typeof itemWidth === "number" ? `${itemWidth}%` : itemWidth;
+	const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
-	const getTrackStyle = () => {
-		if (!viewportRef.current) return {};
+	const autoplayTimer = useRef<number | null>(null);
 
-		const viewportWidth = viewportRef.current.clientWidth;
-		let itemWidthPx = typeof itemWidth === "number" ? (viewportWidth * itemWidth) / 100 : parseFloat(itemWidth);
+	const virtualItems = (() => {
+		const items = originItems;
+		if (items.length <= 1) return items;
+		return [...items.slice(-2), ...items, ...items.slice(0, 2)];
+	})();
 
-		const centerPosition = activeIndex * (itemWidthPx + gap);
-		const translateOffset = viewportWidth / 2 - centerPosition - itemWidthPx / 2;
+	const itemStyle = useCallback(() => {
+		if (typeof itemWidth === "number") {
+			const vw = layoutCache.viewportWidth;
+			const w = vw ? `${(vw * itemWidth) / 100}px` : `${itemWidth}%`;
+			return { width: w } as React.CSSProperties;
+		}
+		return { width: itemWidth as string } as React.CSSProperties;
+	}, [itemWidth, layoutCache.viewportWidth]);
 
+	const arrowStyle = useCallback(() => {
+		if (typeof arrowSize === "number") {
+			const size = arrowSize;
+			return {
+				width: `${size}px`,
+				height: `${size}px`,
+				fontSize: `${Math.round(size * 0.5)}px`,
+			} as React.CSSProperties;
+		}
+		const size = parseFloat(String(arrowSize)) || 45;
+		return { width: `${size}px`, height: `${size}px`, fontSize: `${Math.round(size * 0.5)}px` } as React.CSSProperties;
+	}, [arrowSize]);
+
+	const trackStyle = useCallback(() => {
+		const { viewportWidth, itemWidthPx, leftOffset } = layoutCache;
+		if (!viewportWidth || !itemWidthPx) {
+			return {
+				gap: `${gap}px`,
+				transform: `translateX(0px)`,
+				transition: isTransitioning ? "transform 0.4s ease-out" : "none",
+			} as React.CSSProperties;
+		}
+
+		const translate = -(curVirtualIndex * (itemWidthPx + gap) + leftOffset);
 		return {
-			transform: `translateX(${translateOffset}px)`,
+			gap: `${gap}px`,
+			transform: `translateX(${translate}px)`,
 			transition: isTransitioning ? "transform 0.4s ease-out" : "none",
-		};
-	};
+		} as React.CSSProperties;
+	}, [layoutCache, curVirtualIndex, gap, isTransitioning]);
 
-	const moveToIndex = (targetIndex: number, skipTransition = false) => {
-		const length = itemList.length;
+	const realToVirtual = useCallback(
+		(realPos: number) => {
+			const len = originItems.length || 0;
+			if (len === 0) return cloneOffset;
+			const normalized = ((realPos % len) + len) % len;
+			return normalized + cloneOffset;
+		},
+		[originItems]
+	);
+
+	const virtualToReal = useCallback(
+		(virtualPos: number) => {
+			const len = originItems.length || 0;
+			if (len === 0) return 0;
+			return (((virtualPos - cloneOffset) % len) + len) % len;
+		},
+		[originItems]
+	);
+
+	function initLayout() {
+		setCurRealIndex(initialIndex || 0);
+		setCurVirtualIndex(realToVirtual(initialIndex || 0));
+	}
+
+	function measureLayoutCache() {
+		if (!viewportRef.current) return;
+
+		const viewportWidth = viewportRef.current.clientWidth || 0;
+		let itemWidthPx = 0;
+
+		if (typeof itemWidth === "number") {
+			itemWidthPx = (viewportWidth * itemWidth) / 100;
+		}
+
+		if (!itemWidthPx) {
+			const firstChild = trackRef.current?.children[0] as HTMLElement | undefined;
+			itemWidthPx = firstChild?.clientWidth || 0;
+		}
+
+		const leftOffset = itemWidthPx / 2 - viewportWidth / 2;
+		setLayoutCache({ viewportWidth, itemWidthPx, leftOffset });
+	}
+
+	function moveToIndex(targetIndex: number, skipTransition = false) {
+		const length = originItems.length;
 		if (length === 0) return;
-
-		const normalizedIndex = ((targetIndex % length) + length) % length;
-		const virtualIndex = normalizedIndex + cloneOffset;
 
 		if (skipTransition) {
 			setIsTransitioning(false);
-			setCurrentRealIndex(normalizedIndex);
-			setActiveIndex(virtualIndex);
-		} else {
-			setIsTransitioning(true);
-			setActiveIndex(virtualIndex);
+			setCurVirtualIndex((v) => {
+				const newV = v + targetIndex;
+				setCurRealIndex(virtualToReal(newV));
+				return newV;
+			});
+			return;
 		}
-	};
+
+		setIsTransitioning(true);
+		setCurVirtualIndex((v) => v + targetIndex);
+	}
 
 	const handlePrev = () => {
 		clearAutoplay();
-		moveToIndex(currentRealIndex - 1);
+		moveToIndex(-1);
 		setupAutoplay();
 	};
 
 	const handleNext = () => {
 		clearAutoplay();
-		moveToIndex(currentRealIndex + 1);
+		moveToIndex(1);
 		setupAutoplay();
 	};
 
-	const handleJumpTo = (targetIndex: number) => {
+	const handleJumpTo = (realIdx: number) => {
 		clearAutoplay();
-		moveToIndex(targetIndex);
+		const virtualIndex = realToVirtual(realIdx);
+		setIsTransitioning(true);
+		setCurVirtualIndex(virtualIndex);
 		setupAutoplay();
 	};
 
-	const handleTransitionEnd = () => {
-		const length = itemList.length;
-		const virtualIndex = activeIndex;
+	function handleTransitionEnd() {
+		const len = originItems.length;
+		if (len === 0) return;
 
+		const virtualIndex = curVirtualIndex;
 		if (virtualIndex < cloneOffset) {
-			moveToIndex(virtualIndex + length, true);
-		} else if (virtualIndex >= cloneOffset + length) {
-			moveToIndex(virtualIndex - length, true);
-		} else {
-			setCurrentRealIndex(virtualIndex - cloneOffset);
+			const newV = virtualIndex + len;
+			moveToIndex(newV - virtualIndex, true);
+			return;
 		}
-	};
 
-	const setupAutoplay = () => {
-		if (!autoplay || itemList.length <= 1) return;
+		if (virtualIndex >= cloneOffset + len) {
+			const newV = virtualIndex - len;
+			moveToIndex(newV - virtualIndex, true);
+			return;
+		}
+
+		setCurRealIndex(virtualToReal(virtualIndex) % originItems.length);
+	}
+
+	function setupAutoplay() {
+		if (!autoplay || originItems.length <= 1) return;
 		clearAutoplay();
-		autoplayTimerId.current = setInterval(() => {
-			moveToIndex(currentRealIndex + 1);
+		autoplayTimer.current = window.setInterval(() => {
+			moveToIndex(1);
 		}, interval);
-	};
+	}
 
-	const clearAutoplay = () => {
-		if (autoplayTimerId.current) {
-			clearInterval(autoplayTimerId.current);
-			autoplayTimerId.current = null;
-		}
+	function clearAutoplay() {
+		if (!autoplayTimer.current) return;
+		clearInterval(autoplayTimer.current);
+		autoplayTimer.current = null;
+	}
+
+	const onResize = () => {
+		measureLayoutCache();
+		setIsTransitioning(false);
 	};
 
 	useEffect(() => {
-		setTimeout(() => {
-			moveToIndex(initialIndex, true);
-			setupAutoplay();
-		}, 100);
+		const items = React.Children.toArray(children || []) as React.ReactNode[];
+		setOriginItems(items.map((c) => c));
 
-		return () => clearAutoplay();
-	}, []);
+		const raf = window.requestAnimationFrame(() => {
+			initLayout();
+			measureLayoutCache();
+			setupAutoplay();
+		});
+
+		window.addEventListener("resize", onResize);
+		return () => {
+			clearAutoplay();
+			window.removeEventListener("resize", onResize);
+			window.cancelAnimationFrame(raf);
+		};
+	}, [children]);
+
+	useEffect(() => {
+		measureLayoutCache();
+	}, [curVirtualIndex]);
 
 	return (
 		<div style={{ position: "relative", width: "100%", overflow: "hidden" }}>
-			{children && showArrows && (
-				<div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, pointerEvents: "none" }}>
+			{showArrows && originItems.length > 0 && (
+				<div style={{ position: "absolute", inset: 0, zIndex: 10, pointerEvents: "none" }}>
 					<button
+						className="arrow prev"
 						style={{
+							...(arrowStyle() as React.CSSProperties),
+							pointerEvents: "all",
 							position: "absolute",
 							top: "50%",
 							transform: "translateY(-50%)",
-							color: "#fff",
+							left: 12,
 							border: "none",
 							borderRadius: "50%",
-							cursor: "pointer",
-							pointerEvents: "all",
-							transition: "background 0.3s",
-							background: "rgba(0, 0, 0, 0.3)",
+							background: "rgba(0,0,0,0.25)",
+							color: "#fff",
 							display: "flex",
 							alignItems: "center",
 							justifyContent: "center",
-							padding: 0,
-							width: arrowSize,
-							height: arrowSize,
-							left: "20px",
 						}}
 						onClick={handlePrev}>
 						<svg
-							style={{
-								width: "60%",
-								height: "60%",
-							}}
+							style={{ width: "60%", height: "60%" }}
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							strokeWidth="2">
-							<polyline points="15 18 9 12 15 6"></polyline>
+							strokeWidth={2}>
+							<polyline points="15 18 9 12 15 6" />
 						</svg>
 					</button>
 					<button
+						className="arrow next"
 						style={{
+							...(arrowStyle() as React.CSSProperties),
+							pointerEvents: "all",
 							position: "absolute",
 							top: "50%",
 							transform: "translateY(-50%)",
-							color: "#fff",
+							right: 12,
 							border: "none",
 							borderRadius: "50%",
-							cursor: "pointer",
-							pointerEvents: "all",
-							transition: "background 0.3s",
-							background: "rgba(0, 0, 0, 0.3)",
+							background: "rgba(0,0,0,0.25)",
+							color: "#fff",
 							display: "flex",
 							alignItems: "center",
 							justifyContent: "center",
-							padding: 0,
-							width: arrowSize,
-							height: arrowSize,
-							right: "20px",
 						}}
 						onClick={handleNext}>
 						<svg
-							style={{
-								width: "60%",
-								height: "60%",
-							}}
+							style={{ width: "60%", height: "60%" }}
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							strokeWidth="2">
-							<polyline points="9 18 15 12 9 6"></polyline>
+							strokeWidth={2}>
+							<polyline points="9 18 15 12 9 6" />
 						</svg>
 					</button>
 				</div>
 			)}
 
-			<div ref={viewportRef} style={{ width: "100%", overflow: "hidden", position: "relative" }}>
+			<div ref={viewportRef} className="viewport" style={{ width: "100%", overflow: "hidden", position: "relative" }}>
 				<div
 					ref={trackRef}
-					style={{
-						display: "flex",
-						alignItems: "center",
-						padding: "20px 0",
-						...getTrackStyle(),
-					}}
+					className="track"
+					style={{ display: "flex", alignItems: "center", padding: "20px 0", ...(trackStyle() as React.CSSProperties) }}
 					onTransitionEnd={handleTransitionEnd}>
-					{displayList.map((item, index) => (
-						<div
-							key={index}
-							style={{
-								width: computedItemWidth,
-								marginRight: gap,
-								flexShrink: 0,
-								transition: "all 0.4s ease-out",
-								opacity: index === activeIndex ? 1 : 0.6,
-								zIndex: index === activeIndex ? 1 : "auto",
-							}}>
-							{item}
+					{virtualItems.map((child, idx) => (
+						<div key={idx} style={{ ...(itemStyle() as React.CSSProperties), flexShrink: 0 }}>
+							{child}
 						</div>
 					))}
 				</div>
 			</div>
 
-			{showIndicator && (
+			{showIndicator && originItems.length > 0 && (
 				<div
+					className="indicator-bar"
 					style={{
 						position: "absolute",
-						bottom: "5px",
+						bottom: 35,
 						left: "50%",
 						transform: "translateX(-50%)",
 						display: "flex",
-						gap: "8px",
+						gap: 8,
 						zIndex: 2,
 					}}>
-					{itemList.map((_, idx) => (
+					{originItems.map((_, idx) => (
 						<span
 							key={idx}
-							style={{
-								width: idx === currentRealIndex ? "24px" : "8px",
-								height: "8px",
-								borderRadius: idx === currentRealIndex ? "4px" : "50%",
-								background: idx === currentRealIndex ? "#fff" : "rgba(255, 255, 255, 0.4)",
-								transition: "all 0.3s",
-								cursor: "pointer",
-							}}
+							className={`indicator ${idx === curRealIndex ? "active" : ""}`}
 							onClick={() => handleJumpTo(idx)}
+							style={{
+								width: 30,
+								height: 4,
+								background: idx === curRealIndex ? "#fff" : "rgba(255,255,255,0.45)",
+								cursor: "pointer",
+								transition: "all 0.25s",
+							}}
 						/>
 					))}
 				</div>

@@ -1,16 +1,3 @@
-<template>
-  <div class="demo-container">
-    <HorizontalTiledCarousel :items="cardData" :item-width="60" :gap="15" :autoplay="true" :interval="2000"
-      :show-indicator="true">
-      <template #item="{ item }">
-        <div class="demo-card" :style="{ background: item.color }">
-          <div>{{ item.title }}</div>
-        </div>
-      </template>
-    </HorizontalTiledCarousel>
-  </div>
-</template>
-
 <script setup lang="ts">
 import HorizontalTiledCarousel from '../../../components/tiled-carousel/horizontal.vue';
 
@@ -23,25 +10,28 @@ const cardData = [
 ];
 </script>
 
+<template>
+  <div class="demo-wrapper">
+    <HorizontalTiledCarousel :itemWidth="60" :gap="15" :autoplay="true" :interval="2000" :showIndicator="true"
+      :showArrows="true">
+      <div v-for="(card, index) in cardData" :key="index" class="demo-card" :style="{ backgroundColor: card.color }">
+        <div>{{ card.title }}</div>
+      </div>
+    </HorizontalTiledCarousel>
+  </div>
+</template>
+
 <style scoped>
-.demo-container {
-  background: #ededed;
+.demo-wrapper {
+  background-color: #ededed;
 }
 
 .demo-card {
   height: 200px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  color: #fff;
+  align-items: center;
+  color: #ffffff;
   cursor: pointer;
-  transition: transform 0.3s;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.demo-card:hover {
-  transform: scale(1.05);
 }
 </style>
