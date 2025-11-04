@@ -49,7 +49,7 @@ const InfiniteHorizontalScroll: React.FC<InfiniteHorizontalScrollProps> = ({
 			box.scrollLeft += step;
 
 			if (singleCycleWidthRef.current > 0 && box.scrollLeft >= singleCycleWidthRef.current) {
-				box.scrollLeft -= singleCycleWidthRef.current;
+				box.scrollLeft = 0;
 			}
 		}, interval);
 	};

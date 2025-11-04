@@ -92,7 +92,7 @@ function startScroll() {
         box.scrollTop += props.step
 
         if (singleCycleHeight > 0 && box.scrollTop >= singleCycleHeight) {
-            box.scrollTop -= singleCycleHeight
+            box.scrollTop = 0
         }
     }, props.interval)
 }

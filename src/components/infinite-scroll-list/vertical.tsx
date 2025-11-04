@@ -92,7 +92,7 @@ const InfiniteVerticalScroll: React.FC<InfiniteVerticalScrollProps> = ({
 			box.scrollTop += step;
 
 			if (singleCycleHeightRef.current > 0 && box.scrollTop >= singleCycleHeightRef.current) {
-				box.scrollTop -= singleCycleHeightRef.current;
+				box.scrollTop = 0;
 			}
 		}, interval);
 	};

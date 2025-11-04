@@ -93,7 +93,7 @@ function startScroll() {
         box.scrollLeft += props.step
 
         if (singleCycleWidth > 0 && box.scrollLeft >= singleCycleWidth) {
-            box.scrollLeft -= singleCycleWidth
+            box.scrollLeft = 0
         }
     }, props.interval)
 }
