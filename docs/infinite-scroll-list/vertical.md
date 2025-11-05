@@ -148,20 +148,29 @@
 <demo vue="views/infinite-scroll-list/vertical/vertical-flex-demo.vue" react="views/infinite-scroll-list/vertical/vertical-flex-demo.tsx" title="垂直无缝循环滚动的列表-不规则条目示例"/>
 
 ## API
+### Attribute
 
-| parameter   | description                                    | type             | default |
-| ----------- | ---------------------------------------------- | ---------------- | ------- |
-| height      | 容器高度                                       | number \| string | 300     |
-| step        | 每个 interval 增量移动的像素（越大越快）       | number           | 1       |
-| interval    | 滚动间隔（毫秒），值越小滚动越平滑             | number           | 40      |
-| stopOnHover | 鼠标悬停时是否停止滚动                         | boolean          | true    |
-| fill        | 当数据长度小于可见行数时是否复制填充以启用滚动 | boolean          | true    |
-| scroll      | 是否允许条目列表滑动                           | false            |
+| 参数          | 说明                                           | 类型              | 默认值 |
+| ------------- | ---------------------------------------------- | ----------------- | ------ |
+| `height`      | 容器高度                                       | number \\| string | `300`  |
+| `step`        | 每个 interval 增量移动的像素（越大越快）       | number            | `1`    |
+| `interval`    | 滚动间隔（毫秒），值越小滚动越平滑             | number            | `40`   |
+| `stopOnHover` | 鼠标悬停时是否停止滚动                         | boolean           | `true` |
+| `fill`        | 当数据长度小于可见行数时是否复制填充以启用滚动 | boolean           | `true` |
+| `scroll`      | 是否允许条目列表滑动                           | `false`           |
 
 
-## Slot
+### Slot
 
-- 默认 slot：用于渲染行内容。默认获取的行内容会填充到容器高度使其能够保持滚动。
+::: code-group
+
+```vue
+default slot：用于渲染行内容。默认获取的行内容会填充到容器宽度使其能够保持滚动。
+```
+
+```react
+props.children：渲染行内容。默认获取的行内容会填充到容器宽度使其能够保持滚动。
+```
 
 ## 常见问题
 

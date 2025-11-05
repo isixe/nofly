@@ -9,12 +9,15 @@ const cardData = [
   { title: "卡片 5", color: "#ffeaa7" },
 ];
 
-
+function onChange(index: number) {
+  console.log("当前卡片索引：", index);
+}
 </script>
 
 <template>
   <div class="carousel-wrapper">
-    <HorizontalTiledCarousel>
+    <HorizontalTiledCarousel :itemWidth="60" :gap="15" :autoplay="true" :interval="2000" :showIndicator="true"
+      :showArrows="true" @change="onChange">
       <div v-for="(card, index) in cardData" :key="index" class="carousel-card"
         :style="{ backgroundColor: card.color }">
         <div>{{ card.title }}</div>

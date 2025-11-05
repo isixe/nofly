@@ -23,7 +23,7 @@
             </div>
         </div>
 
-        <div v-if="showIndicator && originItems.length > 0" class="indicator-bar">
+        <div v-if="showIndicator && originItems.length > 0" class="indicator-bar" :style="indicatorStyle">
             <span v-for="(_, idx) in originItems" :key="idx" class="indicator" :class="{ active: idx === curRealIndex }"
                 @click="handleJumpTo(idx)" />
         </div>
@@ -33,6 +33,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, useSlots, nextTick, watch } from "vue";
 
+
+const emit = defineEmits<{
+    (e: 'change', activeIndex: number): void
+}>();
+
 type Props = {
     itemWidth?: number | string;
     gap?: number;
@@ -40,17 +45,19 @@ type Props = {
     interval?: number;
     showArrows?: boolean;
     showIndicator?: boolean;
+    indicatorPosition?: 'outside' | 'inside';
     arrowSize?: number | string;
     initialIndex?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
     itemWidth: 60,
-    gap: 16,
+    gap: 15,
     autoplay: false,
     interval: 3000,
     showArrows: true,
     showIndicator: true,
+    indicatorPosition: 'inside',
     arrowSize: 45,
     initialIndex: 0,
 });
@@ -74,6 +81,9 @@ const trackRef = ref<HTMLElement | null>(null);
 
 const cloneOffset = 2;
 const curRealIndex = ref<number>(0);
+
+
+
 const curVirtualIndex = ref<number>(0);
 
 const isTransitioning = ref<boolean>(false);
@@ -111,6 +121,10 @@ const arrowStyle = computed(() => {
     }
 
 });
+const indicatorStyle = computed(() => {
+    const bottom = props.indicatorPosition === 'inside' ? '35px' : '8px';
+    return { bottom };
+});
 const trackStyle = computed(() => {
     const { viewportWidth, itemWidthPx, leftOffset } = layoutCache.value;
 
@@ -129,6 +143,10 @@ const trackStyle = computed(() => {
         transition: isTransitioning.value ? "transform 0.4s ease-out" : "none",
     };
 });
+
+watch(curRealIndex, (value) => {
+    emit('change', value);
+}, { immediate: true });
 
 onMounted(async () => {
     const slotTarget = slots.default ? slots.default() : [];
@@ -325,7 +343,10 @@ function onResize() {
 
 .indicator-bar {
     position: absolute;
+    /* inside */
     bottom: 35px;
+    /* outside */
+    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;

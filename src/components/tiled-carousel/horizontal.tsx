@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 
 type Props = {
 	itemWidth?: number | string;
@@ -7,9 +7,11 @@ type Props = {
 	interval?: number;
 	showArrows?: boolean;
 	showIndicator?: boolean;
+	indicatorPosition?: "outside" | "inside";
 	arrowSize?: number | string;
 	initialIndex?: number;
 	children?: React.ReactNode;
+	change?: (activeIndex: number) => void;
 };
 
 type LayoutCache = {
@@ -22,14 +24,16 @@ const cloneOffset = 2;
 
 const HorizontalTiledCarousel: React.FC<Props> = ({
 	itemWidth = 60,
-	gap = 16,
+	gap = 15,
 	autoplay = false,
 	interval = 3000,
 	showArrows = true,
 	showIndicator = true,
+	indicatorPosition = "inside",
 	arrowSize = 45,
 	initialIndex = 0,
 	children,
+	change,
 }) => {
 	const viewportRef = useRef<HTMLDivElement | null>(null);
 	const trackRef = useRef<HTMLDivElement | null>(null);
@@ -50,16 +54,16 @@ const HorizontalTiledCarousel: React.FC<Props> = ({
 		return [...items.slice(-2), ...items, ...items.slice(0, 2)];
 	})();
 
-	const itemStyle = useCallback(() => {
+	const itemStyle = () => {
 		if (typeof itemWidth === "number") {
 			const vw = layoutCache.viewportWidth;
 			const w = vw ? `${(vw * itemWidth) / 100}px` : `${itemWidth}%`;
 			return { width: w } as React.CSSProperties;
 		}
 		return { width: itemWidth as string } as React.CSSProperties;
-	}, [itemWidth, layoutCache.viewportWidth]);
+	};
 
-	const arrowStyle = useCallback(() => {
+	const arrowStyle = () => {
 		if (typeof arrowSize === "number") {
 			const size = arrowSize;
 			return {
@@ -69,9 +73,9 @@ const HorizontalTiledCarousel: React.FC<Props> = ({
 		}
 		const size = arrowSize || "45px";
 		return { width: size, height: size } as React.CSSProperties;
-	}, [arrowSize]);
+	};
 
-	const trackStyle = useCallback(() => {
+	const trackStyle = () => {
 		const { viewportWidth, itemWidthPx, leftOffset } = layoutCache;
 		if (!viewportWidth || !itemWidthPx) {
 			return {
@@ -87,26 +91,25 @@ const HorizontalTiledCarousel: React.FC<Props> = ({
 			transform: `translateX(${translate}px)`,
 			transition: isTransitioning ? "transform 0.4s ease-out" : "none",
 		} as React.CSSProperties;
-	}, [layoutCache, curVirtualIndex, gap, isTransitioning]);
+	};
 
-	const realToVirtual = useCallback(
-		(realPos: number) => {
-			const len = originItems.length || 0;
-			if (len === 0) return cloneOffset;
-			const normalized = ((realPos % len) + len) % len;
-			return normalized + cloneOffset;
-		},
-		[originItems]
-	);
+	const indicatorStyle = useMemo(() => {
+		const bottom = indicatorPosition === "inside" ? "35px" : "8px";
+		return { bottom } as React.CSSProperties;
+	}, [indicatorPosition]);
 
-	const virtualToReal = useCallback(
-		(virtualPos: number) => {
-			const len = originItems.length || 0;
-			if (len === 0) return 0;
-			return (((virtualPos - cloneOffset) % len) + len) % len;
-		},
-		[originItems]
-	);
+	const realToVirtual = (realPos: number) => {
+		const len = originItems.length || 0;
+		if (len === 0) return cloneOffset;
+		const normalized = ((realPos % len) + len) % len;
+		return normalized + cloneOffset;
+	};
+
+	const virtualToReal = (virtualPos: number) => {
+		const len = originItems.length || 0;
+		if (len === 0) return 0;
+		return (((virtualPos - cloneOffset) % len) + len) % len;
+	};
 
 	function initLayout() {
 		setCurRealIndex(initialIndex || 0);
@@ -231,6 +234,12 @@ const HorizontalTiledCarousel: React.FC<Props> = ({
 		measureLayoutCache();
 	}, [curVirtualIndex]);
 
+	useEffect(() => {
+		if (typeof change === "function") {
+			change(curRealIndex);
+		}
+	}, [curRealIndex, change]);
+
 	return (
 		<div style={{ position: "relative", width: "100%", overflow: "hidden" }}>
 			{showArrows && originItems.length > 0 && (
@@ -311,7 +320,7 @@ const HorizontalTiledCarousel: React.FC<Props> = ({
 					className="indicator-bar"
 					style={{
 						position: "absolute",
-						bottom: 35,
+						...(indicatorStyle as React.CSSProperties),
 						left: "50%",
 						transform: "translateX(-50%)",
 						display: "flex",
