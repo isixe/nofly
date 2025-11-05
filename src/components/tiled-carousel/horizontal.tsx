@@ -65,11 +65,10 @@ const HorizontalTiledCarousel: React.FC<Props> = ({
 			return {
 				width: `${size}px`,
 				height: `${size}px`,
-				fontSize: `${Math.round(size * 0.5)}px`,
 			} as React.CSSProperties;
 		}
-		const size = parseFloat(String(arrowSize)) || 45;
-		return { width: `${size}px`, height: `${size}px`, fontSize: `${Math.round(size * 0.5)}px` } as React.CSSProperties;
+		const size = arrowSize || "45px";
+		return { width: size, height: size } as React.CSSProperties;
 	}, [arrowSize]);
 
 	const trackStyle = useCallback(() => {

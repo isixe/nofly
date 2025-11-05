@@ -34,7 +34,7 @@ export default defineConfig({
 						],
 					},
 					{
-						text: "水平平铺的跑马灯",
+						text: "平铺的跑马灯",
 						items: [{ text: "水平", link: "/tiled-carousel/horizontal" }],
 					},
 				],

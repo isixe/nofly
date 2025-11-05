@@ -149,13 +149,13 @@
 
 ## API
 
-| parameter   | description                                    | type    | default  |
-| ----------- | ---------------------------------------------- | ------- | -------- |
-| width       | 容器宽度                                       | Number  | undefine |
-| step        | 每个 interval 增量移动的像素（越大越快）       | Number  | 1        |
-| interval    | 滚动间隔（毫秒），值越小滚动越平滑             | Number  | 40       |
-| stopOnHover | 鼠标悬停时是否停止滚动                         | Boolean | true     |
-| fill        | 当数据长度小于可见行数时是否复制填充以启用滚动 | Boolean | true     |
+| parameter   | description                                    | type             | default  |
+| ----------- | ---------------------------------------------- | ---------------- | -------- |
+| width       | 容器宽度                                       | number \| string | undefine |
+| step        | 每个 interval 增量移动的像素（越大越快）       | number           | 1        |
+| interval    | 滚动间隔（毫秒），值越小滚动越平滑             | number           | 40       |
+| stopOnHover | 鼠标悬停时是否停止滚动                         | boolean          | true     |
+| fill        | 当数据长度小于可见行数时是否复制填充以启用滚动 | boolean          | true     |
 
 
 ## Slot

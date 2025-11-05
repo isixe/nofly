@@ -40,7 +40,7 @@ type Props = {
     interval?: number;
     showArrows?: boolean;
     showIndicator?: boolean;
-    arrowSize?: number;
+    arrowSize?: number | string;
     initialIndex?: number;
 }
 
@@ -101,15 +101,13 @@ const arrowStyle = computed(() => {
         return {
             width: `${size}px`,
             height: `${size}px`,
-            fontSize: `${Math.round(size * 0.5)}px`,
         }
     }
 
-    const size = parseFloat(String(props.arrowSize)) || 45;
+    const size = props.arrowSize || "45px";
     return {
-        width: `${size}px`,
-        height: `${size}px`,
-        fontSize: `${Math.round(size * 0.5)}px`,
+        width: size,
+        height: size,
     }
 
 });
