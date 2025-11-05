@@ -342,20 +342,18 @@ function onResize() {
 }
 
 .indicator-bar {
+    width: 50%;
     position: absolute;
-    /* inside */
-    bottom: 35px;
-    /* outside */
-    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
+    justify-content: center;
     gap: 8px;
     z-index: 2;
 }
 
 .indicator {
-    width: 30px;
+    width: 10%;
     height: 4px;
     background: rgba(255, 255, 255, 0.45);
     cursor: pointer;

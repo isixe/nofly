@@ -319,11 +319,13 @@ const HorizontalTiledCarousel: React.FC<Props> = ({
 				<div
 					className="indicator-bar"
 					style={{
+						width: "50%",
 						position: "absolute",
 						...(indicatorStyle as React.CSSProperties),
 						left: "50%",
 						transform: "translateX(-50%)",
 						display: "flex",
+						justifyContent: "center",
 						gap: 8,
 						zIndex: 2,
 					}}>
@@ -333,7 +335,7 @@ const HorizontalTiledCarousel: React.FC<Props> = ({
 							className={`indicator ${idx === curRealIndex ? "active" : ""}`}
 							onClick={() => handleJumpTo(idx)}
 							style={{
-								width: 30,
+								width: "10%",
 								height: 4,
 								background: idx === curRealIndex ? "#fff" : "rgba(255,255,255,0.45)",
 								cursor: "pointer",

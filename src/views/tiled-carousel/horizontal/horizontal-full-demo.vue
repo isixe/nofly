@@ -17,7 +17,7 @@ function onChange(index: number) {
 <template>
   <div class="carousel-wrapper">
     <HorizontalTiledCarousel :itemWidth="60" :gap="15" :autoplay="true" :interval="2000" :showIndicator="true"
-      :showArrows="true" @change="onChange">
+      :showArrows="true" indicatorPosition="outside" @change="onChange">
       <div v-for="(card, index) in cardData" :key="index" class="carousel-card"
         :style="{ backgroundColor: card.color }">
         <div>{{ card.title }}</div>

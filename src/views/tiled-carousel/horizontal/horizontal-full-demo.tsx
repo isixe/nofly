@@ -21,6 +21,7 @@ const HorizontalSimpleDemo: React.FC = () => {
 				autoplay={true}
 				interval={2000}
 				showIndicator={true}
+				indicatorPosition="outside"
 				change={onChange}>
 				{cardData.map((item) => (
 					<div
