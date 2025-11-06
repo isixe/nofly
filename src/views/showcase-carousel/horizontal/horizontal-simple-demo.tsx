@@ -1,4 +1,4 @@
-import HorizontalTiledCarousel from "../../../components/tiled-carousel/horizontal";
+import HorizontalTiledCarousel from "../../../components/showcase-carousel/horizontal";
 
 const HorizontalSimpleDemo: React.FC = () => {
 	const cardData = [
@@ -9,20 +9,9 @@ const HorizontalSimpleDemo: React.FC = () => {
 		{ title: "卡片 5", color: "#ffeaa7" },
 	];
 
-	const onChange = (index: number) => {
-		console.log("当前卡片索引：", index);
-	};
-
 	return (
 		<div style={{ backgroundColor: "#ededed" }}>
-			<HorizontalTiledCarousel
-				itemWidth={60}
-				gap={15}
-				autoplay={true}
-				interval={2000}
-				showIndicator={true}
-				indicatorPosition="outside"
-				change={onChange}>
+			<HorizontalTiledCarousel>
 				{cardData.map((item) => (
 					<div
 						style={{

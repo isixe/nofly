@@ -34,8 +34,8 @@ export default defineConfig({
 						],
 					},
 					{
-						text: "平铺的跑马灯",
-						items: [{ text: "水平", link: "/tiled-carousel/horizontal" }],
+						text: "展柜式跑马灯",
+						items: [{ text: "水平", link: "/showcase-carousel/horizontal" }],
 					},
 				],
 			},

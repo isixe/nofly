@@ -1,17 +1,17 @@
-<demo vue="components/tiled-carousel/horizontal.vue" react="components/tiled-carousel/horizontal.tsx" title="水平平铺的跑马灯" />
+<demo vue="components/showcase-carousel/horizontal.vue" react="components/showcase-carousel/horizontal.tsx" title="水平展柜式跑马灯" />
 
 
 
 ## 概要
 
-水平平铺的跑马灯（Tiled Carousel）用于将一组等高或等宽的卡片按水平方向平铺展示，支持循环、自动播放、分页指示与左右箭头控制。该组件在内部使用克隆首尾元素实现无缝循环。
+水平展柜式跑马灯（Tiled Carousel）用于将一组等高或等宽的卡片按水平方向平铺展示，支持循环、自动播放、分页指示与左右箭头控制。该组件在内部使用克隆首尾元素实现无缝循环。
 
 适合场景：推荐用于推荐列表、商品走马灯、图片或卡片的横向轮播展示。
 
 ## 基本使用
 下面示例展示最简单的用法
 
-<demo vue="views/tiled-carousel/horizontal/horizontal-simple-demo.vue" react="views/tiled-carousel/horizontal/horizontal-simple-demo.tsx" title="水平平铺的跑马灯 - 简单示例" />
+<demo vue="views/showcase-carousel/horizontal/horizontal-simple-demo.vue" react="views/showcase-carousel/horizontal/horizontal-simple-demo.tsx" title="水平展柜式跑马灯 - 简单示例" />
 
 1) 自定义容器高度和间距：
 
@@ -136,7 +136,7 @@
 ## 完整示例
 下面示例展示完整的用法
 
-<demo vue="views/tiled-carousel/horizontal/horizontal-full-demo.vue" react="views/tiled-carousel/horizontal/horizontal-full-demo.tsx" title="水平平铺的跑马灯 - 完整示例" />
+<demo vue="views/showcase-carousel/horizontal/horizontal-full-demo.vue" react="views/showcase-carousel/horizontal/horizontal-full-demo.tsx" title="水平展柜式跑马灯 - 完整示例" />
 
 ## API
 
