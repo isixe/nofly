@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HorizontalTiledCarousel from '../../../components/showcase-carousel/vertical.vue';
+import VerticalShowcaseCarousel from '../../../components/showcase-carousel/vertical.vue';
 
 const cardData = [
     { title: "卡片 1", color: "#ff6b6b" },
@@ -14,12 +14,12 @@ const cardData = [
 
 <template>
     <div class="carousel-wrapper">
-        <HorizontalTiledCarousel>
+        <VerticalShowcaseCarousel>
             <div v-for="(card, index) in cardData" :key="index" class="carousel-card"
                 :style="{ backgroundColor: card.color }">
                 <div>{{ card.title }}</div>
             </div>
-        </HorizontalTiledCarousel>
+        </VerticalShowcaseCarousel>
     </div>
 </template>
 

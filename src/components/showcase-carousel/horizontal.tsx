@@ -22,7 +22,7 @@ type LayoutCache = {
 
 const cloneOffset = 2;
 
-const HorizontalTiledCarousel: React.FC<Props> = ({
+const HorizontalShowcaseCarousel: React.FC<Props> = ({
 	itemWidth = 60,
 	gap = 15,
 	autoplay = false,
@@ -349,4 +349,4 @@ const HorizontalTiledCarousel: React.FC<Props> = ({
 	);
 };
 
-export default HorizontalTiledCarousel;
+export default HorizontalShowcaseCarousel;

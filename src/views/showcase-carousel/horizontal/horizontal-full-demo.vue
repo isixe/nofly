@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HorizontalTiledCarousel from '../../../components/showcase-carousel/horizontal.vue';
+import HorizontalShowcaseCarousel from '../../../components/showcase-carousel/horizontal.vue';
 
 const cardData = [
   { title: "卡片 1", color: "#ff6b6b" },
@@ -16,13 +16,13 @@ function onChange(index: number) {
 
 <template>
   <div class="carousel-wrapper">
-    <HorizontalTiledCarousel :itemWidth="60" :gap="15" :autoplay="true" :interval="2000" :showIndicator="true"
+    <HorizontalShowcaseCarousel :itemWidth="60" :gap="15" :autoplay="true" :interval="2000" :showIndicator="true"
       :showArrows="true" indicatorPosition="outside" @change="onChange">
       <div v-for="(card, index) in cardData" :key="index" class="carousel-card"
         :style="{ backgroundColor: card.color }">
         <div>{{ card.title }}</div>
       </div>
-    </HorizontalTiledCarousel>
+    </HorizontalShowcaseCarousel>
   </div>
 </template>
 

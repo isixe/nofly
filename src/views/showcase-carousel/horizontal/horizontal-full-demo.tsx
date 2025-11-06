@@ -1,4 +1,4 @@
-import HorizontalTiledCarousel from "../../../components/showcase-carousel/horizontal";
+import HorizontalShowcaseCarousel from "../../../components/showcase-carousel/horizontal";
 
 const HorizontalSimpleDemo: React.FC = () => {
 	const cardData = [
@@ -15,7 +15,7 @@ const HorizontalSimpleDemo: React.FC = () => {
 
 	return (
 		<div style={{ backgroundColor: "#ededed" }}>
-			<HorizontalTiledCarousel
+			<HorizontalShowcaseCarousel
 				itemWidth={60}
 				gap={15}
 				autoplay={true}
@@ -39,7 +39,7 @@ const HorizontalSimpleDemo: React.FC = () => {
 						<div>{item.title}</div>
 					</div>
 				))}
-			</HorizontalTiledCarousel>
+			</HorizontalShowcaseCarousel>
 		</div>
 	);
 };

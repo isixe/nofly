@@ -1,4 +1,4 @@
-import HorizontalTiledCarousel from "../../../components/showcase-carousel/vertical.tsx";
+import VerticalShowcaseCarousel from "../../../components/showcase-carousel/vertical.tsx";
 
 const HorizontalSimpleDemo: React.FC = () => {
 	const cardData = [
@@ -11,7 +11,7 @@ const HorizontalSimpleDemo: React.FC = () => {
 
 	return (
 		<div style={{ height: "340px" }}>
-			<HorizontalTiledCarousel>
+			<VerticalShowcaseCarousel>
 				{cardData.map((item) => (
 					<div
 						style={{
@@ -27,7 +27,7 @@ const HorizontalSimpleDemo: React.FC = () => {
 						<div>{item.title}</div>
 					</div>
 				))}
-			</HorizontalTiledCarousel>
+			</VerticalShowcaseCarousel>
 		</div>
 	);
 };

@@ -17,24 +17,24 @@
 
 ```vue
 <div class="carousel-wrapper">
-	<VerticalTiledCarousel :itemHeight="60" :gap="15">
+	<VerticalShowcaseCarousel :itemHeight="60" :gap="15">
 	<div v-for="(card, index) in cardData" :key="index" class="carousel-card"
 		:style="{ backgroundColor: card.color }">
 		<div>{{ card.title }}</div>
 	</div>
-	</VerticalTiledCarousel>
+	</VerticalShowcaseCarousel>
 </div>
 ```
 
 ```react
 <div class="carousel-wrapper">
-	<VerticalTiledCarousel itemHeight={60} gap={15}>
+	<VerticalShowcaseCarousel itemHeight={60} gap={15}>
 		{cardData.map((item) => (
 			<div class="carousel-card">
 				<div>{item.title}</div>
 			</div>
 		))}
-	</VerticalTiledCarousel>
+	</VerticalShowcaseCarousel>
 </div>;
 
 ```
@@ -47,24 +47,24 @@
 
 ```vue
 <div class="carousel-wrapper">
-	<VerticalTiledCarousel :showArrows="false" :showIndicator="false">
+	<VerticalShowcaseCarousel :showArrows="false" :showIndicator="false">
 	<div v-for="(card, index) in cardData" :key="index" class="carousel-card"
 		:style="{ backgroundColor: card.color }">
 		<div>{{ card.title }}</div>
 	</div>
-	</VerticalTiledCarousel>
+	</VerticalShowcaseCarousel>
 </div>
 ```
 
 ```react
 <div class="carousel-wrapper">
-	<VerticalTiledCarousel showArrows={false} showIndicator={false}>
+	<VerticalShowcaseCarousel showArrows={false} showIndicator={false}>
 		{cardData.map((item) => (
 			<div class="carousel-card">
 				<div>{item.title}</div>
 			</div>
 		))}
-	</VerticalTiledCarousel>
+	</VerticalShowcaseCarousel>
 </div>;
 
 ```
@@ -77,24 +77,24 @@
 
 ```vue
 <div class="carousel-wrapper">
-	<VerticalTiledCarousel :autoplay="false">
+	<VerticalShowcaseCarousel :autoplay="false">
 	<div v-for="(card, index) in cardData" :key="index" class="carousel-card"
 		:style="{ backgroundColor: card.color }">
 		<div>{{ card.title }}</div>
 	</div>
-	</VerticalTiledCarousel>
+	</VerticalShowcaseCarousel>
 </div>
 ```
 
 ```react
 <div class="carousel-wrapper">
-	<VerticalTiledCarousel autoplay={false}>
+	<VerticalShowcaseCarousel autoplay={false}>
 		{cardData.map((item) => (
 			<div class="carousel-card">
 				<div>{item.title}</div>
 			</div>
 		))}
-	</VerticalTiledCarousel>
+	</VerticalShowcaseCarousel>
 </div>;
 
 ```
@@ -107,24 +107,24 @@
 
 ```vue
 <div class="carousel-wrapper">
-	<VerticalTiledCarousel :indicatorPosition="right">
+	<VerticalShowcaseCarousel :indicatorPosition="right">
 	<div v-for="(card, index) in cardData" :key="index" class="carousel-card"
 		:style="{ backgroundColor: card.color }">
 		<div>{{ card.title }}</div>
 	</div>
-	</VerticalTiledCarousel>
+	</VerticalShowcaseCarousel>
 </div>
 ```
 
 ```react
 <div class="carousel-wrapper">
-	<VerticalTiledCarousel indicatorPosition="right">
+	<VerticalShowcaseCarousel indicatorPosition="right">
 		{cardData.map((item) => (
 			<div class="carousel-card">
 				<div>{item.title}</div>
 			</div>
 		))}
-	</VerticalTiledCarousel>
+	</VerticalShowcaseCarousel>
 </div>;
 
 ```

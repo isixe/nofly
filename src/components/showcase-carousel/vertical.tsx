@@ -22,7 +22,7 @@ type LayoutCache = {
 
 const cloneOffset = 2;
 
-const VerticalTiledCarousel: React.FC<Props> = ({
+const VerticalShowcaseCarousel: React.FC<Props> = ({
 	itemHeight = 60,
 	gap = 0,
 	autoplay = false,
@@ -386,4 +386,4 @@ const VerticalTiledCarousel: React.FC<Props> = ({
 	);
 };
 
-export default VerticalTiledCarousel;
+export default VerticalShowcaseCarousel;
