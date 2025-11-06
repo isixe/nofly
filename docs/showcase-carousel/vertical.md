@@ -11,7 +11,7 @@
 
 <demo vue="views/showcase-carousel/vertical/vertical-simple-demo.vue" react="views/showcase-carousel/vertical/vertical-simple-demo.tsx" title="垂直展柜式跑马灯 - 简单示例" />
 
-1) 自定义容器高度和间距：
+1) 自定义条目高度和间距：
 
 ::: code-group
 
