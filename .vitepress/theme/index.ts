@@ -1,7 +1,8 @@
 // https://vitepress.dev/guide/custom-theme
-import { h } from "vue";
-import type { Theme } from "vitepress";
+import { h, toRefs } from "vue";
+import { useData, useRoute, type Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
+import giscusTalk from "vitepress-plugin-comment-with-giscus";
 import "./style.css";
 import "virtual:group-icons.css";
 
@@ -14,5 +15,29 @@ export default {
 	},
 	enhanceApp({ app, router, siteData }) {
 		// ...
+	},
+	setup() {
+		const { frontmatter } = toRefs(useData());
+		const route = useRoute();
+
+		giscusTalk(
+			{
+				repo: "isixe/nofly",
+				repoId: "R_kgDOPuEFwA",
+				category: "General",
+				categoryId: "DIC_kwDOPuEFwM4CxrPD",
+				mapping: "title",
+				inputPosition: "top",
+				lang: "zh-CN",
+				lightTheme: "light",
+				darkTheme: "transparent_dark",
+				reactionEnabled: "1",
+			},
+			{
+				frontmatter,
+				route,
+			},
+			true
+		);
 	},
 } satisfies Theme;
