@@ -3,6 +3,7 @@ import { h, toRefs } from "vue";
 import { useData, useRoute, type Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 import giscusTalk from "vitepress-plugin-comment-with-giscus";
+import googleAnalytics from "vitepress-plugin-google-analytics";
 import "./style.css";
 import "virtual:group-icons.css";
 
@@ -14,7 +15,9 @@ export default {
 		});
 	},
 	enhanceApp({ app, router, siteData }) {
-		// ...
+		googleAnalytics({
+			id: "G-N14369DVDH",
+		});
 	},
 	setup() {
 		const { frontmatter } = toRefs(useData());
