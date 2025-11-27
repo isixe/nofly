@@ -22,14 +22,14 @@
 
 | 参数                | 说明                                                                                                                               | 类型                          | 默认值    |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | --------- |
-| `itemHeight`        | 控制每个项目的高度。若为 number 则表示百分比（例如 `60` 表示 60% 的父容器高度），也可传入字符串。例如 `'300px'` 指定固定像素高度。 | number \\\| string            | `60`      |
+| `itemHeight`        | 控制每个项目的高度。若为 number 则表示百分比（例如 `60` 表示 60% 的父容器高度），也可传入字符串。例如 `'300px'` 指定固定像素高度。 | number \\| string             | `60`      |
 | `gap`               | 项目之间的间距，单位为 px。                                                                                                        | number                        | `0`       |
 | `autoplay`          | 是否启用自动播放                                                                                                                   | boolean                       | `false`   |
 | `interval`          | 自动播放间隔，单位为毫秒                                                                                                           | number                        | `3000`    |
 | `showArrows`        | 是否显示上下箭头控制按钮                                                                                                           | boolean                       | `true`    |
 | `showIndicator`     | 是否显示侧边分页指示器                                                                                                             | boolean                       | `true`    |
-| `indicatorPosition` | 指示器位置：`'left'` 或 `'right'`，在组件两侧垂直居中显示                                                                          | 'left' \\\| 'right'           | `'right'` |
-| `arrowSize`         | 箭头按钮的大小。数字表示像素（如 `45`），也可传入字符串如 `'3rem'` 或 `'45px'`                                                     | number \\\| string            | `45`      |
+| `indicatorPosition` | 指示器位置：`'left'` 或 `'right'`，在组件两侧垂直居中显示                                                                          | 'left' \\| 'right'            | `'right'` |
+| `arrowSize`         | 箭头按钮的大小。数字表示像素（如 `45`），也可传入字符串如 `'3rem'` 或 `'45px'`                                                     | number \\| string             | `45`      |
 | `initialIndex`      | 初始激活的项目索引                                                                                                                 | number                        | `0`       |
 | `change`            | 当当前激活项变化时触发，参数为真实的 item 索引（不包含克隆项）                                                                     | (activeIndex: number) => void |           |
 
