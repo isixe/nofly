@@ -16,7 +16,8 @@
         </div>
 
         <div ref="viewportRef" class="viewport">
-            <div ref="trackRef" class="track" :style="trackStyle" @transitionend="handleTransitionEnd">
+            <div v-if="originItems.length" ref="trackRef" class="track" :style="trackStyle"
+                @transitionend="handleTransitionEnd">
                 <template v-for="(vnode, index) in virtualItems" :key="index">
                     <component :is="vnode" :style="itemStyle" />
                 </template>

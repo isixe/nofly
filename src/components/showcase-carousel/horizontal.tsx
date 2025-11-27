@@ -302,17 +302,24 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 			)}
 
 			<div ref={viewportRef} className="viewport" style={{ width: "100%", overflow: "hidden", position: "relative" }}>
-				<div
-					ref={trackRef}
-					className="track"
-					style={{ display: "flex", alignItems: "center", padding: "20px 0", ...(trackStyle() as React.CSSProperties) }}
-					onTransitionEnd={handleTransitionEnd}>
-					{virtualItems.map((child, idx) => (
-						<div key={idx} style={{ ...(itemStyle() as React.CSSProperties), flexShrink: 0 }}>
-							{child}
-						</div>
-					))}
-				</div>
+				{originItems.length > 0 && (
+					<div
+						ref={trackRef}
+						className="track"
+						style={{
+							display: "flex",
+							alignItems: "center",
+							padding: "20px 0",
+							...(trackStyle() as React.CSSProperties),
+						}}
+						onTransitionEnd={handleTransitionEnd}>
+						{virtualItems.map((child, idx) => (
+							<div key={idx} style={{ ...(itemStyle() as React.CSSProperties), flexShrink: 0 }}>
+								{child}
+							</div>
+						))}
+					</div>
+				)}
 			</div>
 
 			{showIndicator && originItems.length > 0 && (
