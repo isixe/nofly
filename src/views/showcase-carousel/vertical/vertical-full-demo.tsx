@@ -9,9 +9,14 @@ const HorizontalSimpleDemo: React.FC = () => {
 		{ title: "卡片 5", color: "#ffeaa7" },
 	];
 
-	const change = (index: number) => {
+	function onChange(index: number) {
 		console.log("当前卡片索引：", index);
-	};
+	}
+
+	function onCardClick(index: number) {
+		const card = cardData[index];
+		console.log(`点击了 ${card.title}，索引：${index}`);
+	}
 
 	return (
 		<div style={{ height: "340px" }}>
@@ -22,7 +27,8 @@ const HorizontalSimpleDemo: React.FC = () => {
 				interval={2000}
 				showArrows={true}
 				indicatorPosition="left"
-				change={change}>
+				change={onChange}
+				click={onCardClick}>
 				{cardData.map((item) => (
 					<div
 						style={{

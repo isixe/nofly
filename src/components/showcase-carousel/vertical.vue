@@ -18,7 +18,7 @@
         <div ref="viewportRef" class="viewport">
             <div ref="trackRef" class="track" :style="trackStyle" @transitionend="handleTransitionEnd">
                 <template v-for="(vnode, index) in virtualItems" :key="index">
-                    <component :is="vnode" :style="itemStyle" />
+                    <component :is="vnode" :style="itemStyle" @click="onClick(index)" />
                 </template>
             </div>
         </div>
@@ -35,7 +35,8 @@ import { ref, computed, onMounted, onUnmounted, useSlots, nextTick, watch } from
 
 
 const emit = defineEmits<{
-    (e: 'change', activeIndex: number): void
+    (e: 'change', activeIndex: number): void,
+    (e: 'click', index: number): void;
 }>();
 
 type Props = {
@@ -199,7 +200,6 @@ function measureLayoutCache() {
     nextTick();
 
     viewportHeight = viewportRef.value.clientHeight;
-    console.log(viewportHeight)
 
     if (typeof props.itemHeight === "number") {
         itemHeightPx = (viewportHeight * props.itemHeight) / 100;
@@ -306,6 +306,24 @@ function clearAutoplay() {
 function onResize() {
     measureLayoutCache();
     isTransitioning.value = false;
+}
+
+function onClick(index: number) {
+    const realIndex = virtualToReal(index);
+
+    if (index > curVirtualIndex.value) {
+        clearAutoplay();
+        moveToIndex(1);
+        setupAutoplay();
+    }
+
+    if (index < curVirtualIndex.value) {
+        clearAutoplay();
+        moveToIndex(-1);
+        setupAutoplay();
+    }
+
+    emit('click', realIndex);
 }
 </script>
 

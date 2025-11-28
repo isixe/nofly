@@ -12,6 +12,7 @@ type Props = {
 	initialIndex?: number;
 	children?: React.ReactNode;
 	change?: (activeIndex: number) => void;
+	click?: (activeIndex: number) => void;
 };
 
 type LayoutCache = {
@@ -34,6 +35,7 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 	initialIndex = 0,
 	children,
 	change,
+	click,
 }) => {
 	const viewportRef = useRef<HTMLDivElement | null>(null);
 	const trackRef = useRef<HTMLDivElement | null>(null);
@@ -207,10 +209,30 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 		autoplayTimer.current = null;
 	}
 
-	const onResize = () => {
+	function onResize() {
 		measureLayoutCache();
 		setIsTransitioning(false);
-	};
+	}
+
+	function onClick(index: number) {
+		const realIndex = virtualToReal(index);
+
+		if (index > curVirtualIndex) {
+			clearAutoplay();
+			moveToIndex(1);
+			setupAutoplay();
+		}
+
+		if (index < curVirtualIndex) {
+			clearAutoplay();
+			moveToIndex(-1);
+			setupAutoplay();
+		}
+
+		if (typeof click === "function") {
+			click(realIndex);
+		}
+	}
 
 	useEffect(() => {
 		const items = React.Children.toArray(children || []) as React.ReactNode[];
@@ -314,7 +336,10 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 						}}
 						onTransitionEnd={handleTransitionEnd}>
 						{virtualItems.map((child, idx) => (
-							<div key={idx} style={{ ...(itemStyle() as React.CSSProperties), flexShrink: 0 }}>
+							<div
+								key={idx}
+								style={{ ...(itemStyle() as React.CSSProperties), flexShrink: 0 }}
+								onClick={() => onClick(idx)}>
 								{child}
 							</div>
 						))}

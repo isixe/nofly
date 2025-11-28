@@ -12,12 +12,17 @@ const cardData = [
 function onChange(index: number) {
   console.log("当前卡片索引：", index);
 }
+
+function onCardClick(index: number) {
+  const card = cardData[index];
+  console.log(`点击了 ${card.title}，索引：${index}`);
+}
 </script>
 
 <template>
   <div class="carousel-wrapper">
     <HorizontalShowcaseCarousel :itemWidth="60" :gap="15" :autoplay="true" :interval="2000" :showIndicator="true"
-      :showArrows="true" indicatorPosition="outside" @change="onChange">
+      :showArrows="true" indicatorPosition="outside" @change="onChange" @click="onCardClick">
       <div v-for="(card, index) in cardData" :key="index" class="carousel-card"
         :style="{ backgroundColor: card.color }">
         <div>{{ card.title }}</div>

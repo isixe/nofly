@@ -34,6 +34,8 @@
 | `arrowSize`         | 箭头按钮的大小。数字表示像素（如 `45`），也可传入字符串如 `'3rem'` 或 `'45px'`                                          | number \\| string             | `45`       |
 | `initialIndex`      | 初始激活的项目索引                                                                                                      | number                        | `0`        |
 | `change`            | 当当前激活项变化时触发，参数为真实的 item 索引（不包含克隆项）                                                          | (activeIndex: number) => void |            |
+| `click`             | 当前项目被点击时触发，参数为真实的 item 索引（不包含克隆项）                                                            | (activeIndex: number) => void |            |
+
 
 ### Slot
 

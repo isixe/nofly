@@ -9,7 +9,6 @@ const cardData = [
     { title: "卡片 5", color: "#ffeaa7" },
 ];
 
-
 </script>
 
 <template>
