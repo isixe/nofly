@@ -1,7 +1,5 @@
 <demo vue="components/showcase-carousel/horizontal.vue" react="components/showcase-carousel/horizontal.tsx" title="水平展柜式跑马灯" />
 
-
-
 ## 概要
 
 `Showcase Carousel (horizontal)` 用于将一组等高或等宽的卡片按水平方向平铺展示，支持循环、自动播放、分页指示与左右箭头控制。该组件在内部使用克隆首尾元素实现无缝循环。
