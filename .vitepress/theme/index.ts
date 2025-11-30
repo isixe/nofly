@@ -1,5 +1,5 @@
 // https://vitepress.dev/guide/custom-theme
-import { h, toRefs } from "vue";
+import { h } from "vue";
 import { useData, useRoute, type Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 import giscusTalk from "vitepress-plugin-comment-with-giscus";
@@ -20,7 +20,7 @@ export default {
 		});
 	},
 	setup() {
-		const { frontmatter } = toRefs(useData());
+		const { frontmatter } = useData();
 		const route = useRoute();
 
 		giscusTalk(
