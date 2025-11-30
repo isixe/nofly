@@ -40,6 +40,7 @@ export default defineConfig({
 							{ text: "水平", link: "/showcase-carousel/horizontal" },
 						],
 					},
+					{ text: "通知轮播", link: "/notice-carousel/index" },
 				],
 			},
 		],
