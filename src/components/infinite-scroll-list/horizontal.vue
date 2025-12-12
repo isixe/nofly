@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 
 type Props = {
     width?: number | string
@@ -33,6 +33,9 @@ const boxRef = ref<HTMLDivElement>()
 let timer: number | null = null
 let singleCycleWidth = 0
 
+const handleMouseEnter = () => props.stopOnHover && stopScroll()
+const handleMouseLeave = () => props.stopOnHover && startScroll()
+
 function getElementWidth(element: HTMLElement): number {
     const rect = element.getBoundingClientRect()
     const style = window.getComputedStyle(element)
@@ -45,7 +48,7 @@ function getTotalWidth(elements: HTMLElement[]): number {
     return elements.reduce((total, el) => total + getElementWidth(el), 0)
 }
 
-onMounted(async () => {
+async function initScroll() {
     await nextTick()
     const box = boxRef.value!
     const wrap = wrapRef.value!
@@ -81,9 +84,7 @@ onMounted(async () => {
     singleCycleWidth = getTotalWidth(firstCycleItems)
 
     startScroll()
-})
-
-onUnmounted(() => stopScroll())
+}
 
 function startScroll() {
     if (timer) return
@@ -98,6 +99,21 @@ function startScroll() {
     }, props.interval)
 }
 
+watch(
+    () => [props.width, props.fill, props.scroll],
+    () => {
+        initScroll()
+    }
+)
+
+watch(
+    () => [props.step, props.interval, props.stopOnHover],
+    () => {
+        stopScroll()
+        startScroll()
+    }
+)
+
 function stopScroll() {
     if (timer) {
         window.clearInterval(timer)
@@ -105,13 +121,8 @@ function stopScroll() {
     timer = null
 }
 
-function handleMouseEnter() {
-    if (props.stopOnHover) stopScroll()
-}
-
-function handleMouseLeave() {
-    if (props.stopOnHover) startScroll()
-}
+onMounted(() => initScroll())
+onUnmounted(() => stopScroll())
 </script>
 
 <style scoped>

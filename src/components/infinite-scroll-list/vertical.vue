@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 
 type Props = {
     height?: number | string
@@ -33,6 +33,9 @@ const boxRef = ref<HTMLDivElement>()
 let timer: number | null = null
 let singleCycleHeight = 0
 
+const handleMouseEnter = () => props.stopOnHover && stopScroll()
+const handleMouseLeave = () => props.stopOnHover && startScroll()
+
 function getElementHeight(element: HTMLElement): number {
     const rect = element.getBoundingClientRect()
     const style = window.getComputedStyle(element)
@@ -45,7 +48,7 @@ function getTotalHeight(elements: HTMLElement[]): number {
     return elements.reduce((total, el) => total + getElementHeight(el), 0)
 }
 
-onMounted(async () => {
+async function initScroll() {
     await nextTick()
     const box = boxRef.value!
     const wrap = wrapRef.value!
@@ -80,9 +83,7 @@ onMounted(async () => {
     singleCycleHeight = getTotalHeight(firstCycleRows)
 
     startScroll()
-})
-
-onUnmounted(() => stopScroll())
+}
 
 function startScroll() {
     if (timer) return
@@ -104,13 +105,23 @@ function stopScroll() {
     timer = null
 }
 
-function handleMouseEnter() {
-    if (props.stopOnHover) stopScroll()
-}
+watch(
+    () => [props.height, props.fill, props.scroll],
+    () => {
+        initScroll()
+    }
+)
 
-function handleMouseLeave() {
-    if (props.stopOnHover) startScroll()
-}
+watch(
+    () => [props.step, props.interval, props.stopOnHover],
+    () => {
+        stopScroll()
+        startScroll()
+    }
+)
+
+onMounted(() => initScroll())
+onUnmounted(() => stopScroll())
 </script>
 
 <style scoped>

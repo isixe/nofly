@@ -61,13 +61,8 @@ const InfiniteHorizontalScroll: React.FC<InfiniteHorizontalScrollProps> = ({
 		}
 	};
 
-	const handleMouseEnter = () => {
-		if (stopOnHover) stopScroll();
-	};
-
-	const handleMouseLeave = () => {
-		if (stopOnHover) startScroll();
-	};
+	const handleMouseEnter = () => stopOnHover && stopScroll();
+	const handleMouseLeave = () => stopOnHover && startScroll();
 
 	useEffect(() => {
 		const initScroll = async () => {
@@ -119,7 +114,13 @@ const InfiniteHorizontalScroll: React.FC<InfiniteHorizontalScrollProps> = ({
 		return () => {
 			stopScroll();
 		};
-	}, [children, width, fill, step, interval, scroll]);
+	}, [width, fill, scroll, children]);
+
+	useEffect(() => {
+		stopScroll();
+		startScroll();
+		return () => stopScroll();
+	}, [step, interval]);
 
 	return (
 		<div

@@ -36,6 +36,31 @@ const InfiniteVerticalScroll: React.FC<InfiniteVerticalScrollProps> = ({
 		return elements.reduce((total, el) => total + getElementHeight(el), 0);
 	};
 
+	const startScroll = () => {
+		if (timerRef.current) return;
+
+		timerRef.current = window.setInterval(() => {
+			const box = boxRef.current;
+			if (!box) return;
+
+			box.scrollTop += step;
+
+			if (singleCycleHeightRef.current > 0 && box.scrollTop >= singleCycleHeightRef.current) {
+				box.scrollTop = 0;
+			}
+		}, interval);
+	};
+
+	const stopScroll = () => {
+		if (timerRef.current) {
+			window.clearInterval(timerRef.current);
+			timerRef.current = null;
+		}
+	};
+
+	const handleMouseEnter = () => stopOnHover && stopScroll();
+	const handleMouseLeave = () => stopOnHover && startScroll();
+
 	useEffect(() => {
 		const initScroll = async () => {
 			const box = boxRef.current;
@@ -80,37 +105,13 @@ const InfiniteVerticalScroll: React.FC<InfiniteVerticalScrollProps> = ({
 		return () => {
 			stopScroll();
 		};
-	}, [height, fill, step, interval, children]);
+	}, [height, fill, scroll, children]);
 
-	const startScroll = () => {
-		if (timerRef.current) return;
-
-		timerRef.current = window.setInterval(() => {
-			const box = boxRef.current;
-			if (!box) return;
-
-			box.scrollTop += step;
-
-			if (singleCycleHeightRef.current > 0 && box.scrollTop >= singleCycleHeightRef.current) {
-				box.scrollTop = 0;
-			}
-		}, interval);
-	};
-
-	const stopScroll = () => {
-		if (timerRef.current) {
-			window.clearInterval(timerRef.current);
-			timerRef.current = null;
-		}
-	};
-
-	const handleMouseEnter = () => {
-		if (stopOnHover) stopScroll();
-	};
-
-	const handleMouseLeave = () => {
-		if (stopOnHover) startScroll();
-	};
+	useEffect(() => {
+		stopScroll();
+		startScroll();
+		return () => stopScroll();
+	}, [step, interval]);
 
 	return (
 		<div
