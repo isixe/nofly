@@ -120,8 +120,9 @@ const VerticalShowcaseCarousel: React.FC<Props> = ({
 	};
 
 	function initLayout() {
-		setCurRealIndex(initialIndex || 0);
-		setCurVirtualIndex(realToVirtual(initialIndex || 0));
+		const real = Math.max(0, Math.min(initialIndex ?? 0, originItems.length - 1));
+		setCurRealIndex(real);
+		setCurVirtualIndex(realToVirtual(real));
 	}
 
 	function measureLayoutCache() {
@@ -160,27 +161,27 @@ const VerticalShowcaseCarousel: React.FC<Props> = ({
 		setCurVirtualIndex((v) => v + targetIndex);
 	}
 
-	const handlePrev = () => {
+	function prev() {
 		clearAutoplay();
 		moveToIndex(-1);
 		setupAutoplay();
-	};
+	}
 
-	const handleNext = () => {
+	function next() {
 		clearAutoplay();
 		moveToIndex(1);
 		setupAutoplay();
-	};
+	}
 
-	const handleJumpTo = (realIdx: number) => {
+	function jumpTo(realIdx: number) {
 		clearAutoplay();
 		const virtualIndex = realToVirtual(realIdx);
 		setIsTransitioning(true);
 		setCurVirtualIndex(virtualIndex);
 		setupAutoplay();
-	};
+	}
 
-	function handleTransitionEnd() {
+	function onTransitionEnd() {
 		const len = originItems.length;
 		if (len === 0) return;
 
@@ -275,8 +276,18 @@ const VerticalShowcaseCarousel: React.FC<Props> = ({
 	}, [children]);
 
 	useEffect(() => {
+		initLayout();
+	}, [initLayout]);
+
+	useEffect(() => {
 		measureLayoutCache();
-	}, [curVirtualIndex]);
+		setIsTransitioning(false);
+	}, [itemHeight, gap]);
+
+	useEffect(() => {
+		clearAutoplay();
+		setupAutoplay();
+	}, [autoplay, interval]);
 
 	useEffect(() => {
 		if (typeof change === "function") {
@@ -305,7 +316,7 @@ const VerticalShowcaseCarousel: React.FC<Props> = ({
 							alignItems: "center",
 							justifyContent: "center",
 						}}
-						onClick={handlePrev}>
+						onClick={prev}>
 						<svg
 							style={{ width: "60%", height: "60%", transform: "rotate(90deg)" }}
 							viewBox="0 0 24 24"
@@ -332,7 +343,7 @@ const VerticalShowcaseCarousel: React.FC<Props> = ({
 							alignItems: "center",
 							justifyContent: "center",
 						}}
-						onClick={handleNext}>
+						onClick={next}>
 						<svg
 							style={{ width: "60%", height: "60%", transform: "rotate(90deg)" }}
 							viewBox="0 0 24 24"
@@ -358,7 +369,7 @@ const VerticalShowcaseCarousel: React.FC<Props> = ({
 						alignItems: "center",
 						...(trackStyle() as React.CSSProperties),
 					}}
-					onTransitionEnd={handleTransitionEnd}>
+					onTransitionEnd={onTransitionEnd}>
 					{virtualItems.map((child, idx) => (
 						<div
 							key={idx}
@@ -393,7 +404,7 @@ const VerticalShowcaseCarousel: React.FC<Props> = ({
 						<span
 							key={idx}
 							className={`indicator ${idx === curRealIndex ? "active" : ""}`}
-							onClick={() => handleJumpTo(idx)}
+							onClick={() => jumpTo(idx)}
 							style={{
 								width: 4,
 								height: "5%",

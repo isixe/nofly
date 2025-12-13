@@ -33,8 +33,8 @@ const boxRef = ref<HTMLDivElement>()
 let timer: number | null = null
 let singleCycleHeight = 0
 
+const handleMouseLeave = () => startScroll()
 const handleMouseEnter = () => props.stopOnHover && stopScroll()
-const handleMouseLeave = () => props.stopOnHover && startScroll()
 
 function getElementHeight(element: HTMLElement): number {
     const rect = element.getBoundingClientRect()
@@ -113,7 +113,7 @@ watch(
 )
 
 watch(
-    () => [props.step, props.interval, props.stopOnHover],
+    () => [props.step, props.interval],
     () => {
         stopScroll()
         startScroll()

@@ -1,11 +1,11 @@
 <template>
     <div v-if="data.length" class="notice-carousel" :class="[`is-${direction}`, animation === 'fade' ? 'is-fade' : '']"
-        @mouseenter="pause" @mouseleave="play" ref="rootRef">
+        @mouseenter="pause" @mouseleave="play">
         <div v-if="$slots.prefix" class="notice-carousel-prefix">
             <slot name="prefix"></slot>
         </div>
 
-        <div class="notice-carousel-viewport" ref="viewportRef">
+        <div class="notice-carousel-viewport">
             <div class="notice-carousel-track">
                 <div v-for="(item, index) in data" :key="index" class="notice-carousel-item"
                     :class="{ 'is-active': currentIndex === index }" @click="onClick(item, index)">
@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<NoticeBarProps>(), {
     initialIndex: 0,
     interval: 3000,
     direction: 'horizontal',
-    stopOnHover: true,
+    stopOnHover: false,
     animation: 'slide',
 });
 
@@ -51,49 +51,12 @@ const emit = defineEmits<{
     (e: 'click', item: any, index: number): void;
 }>();
 
-const viewportRef = ref<HTMLElement | null>(null);
-const rootRef = ref<HTMLElement | null>(null);
-
 const currentIndex = ref(0);
 let timer: number | null = null;
 
-const initializeIndex = () => {
-    const index = Math.max(0, Math.min(props.initialIndex, props.data.length - 1));
-    currentIndex.value = props.data.length > 0 ? index : 0;
-};
+const onClick = (item: any, index: number) => emit('click', item, index);
 
-const next = () => {
-    if (props.data.length === 0) return;
-
-    const nextIndex = (currentIndex.value + 1) % props.data.length;
-    currentIndex.value = nextIndex;
-    emit('change', nextIndex);
-};
-
-const play = () => {
-    if (timer || props.data.length <= 1) return;
-    timer = window.setInterval(next, props.interval);
-};
-
-const pause = () => {
-    if (timer && props.stopOnHover) {
-        clearInterval(timer);
-        timer = null;
-    }
-};
-
-const onClick = (item: any, index: number) => {
-    emit('click', item, index);
-};
-
-const goTo = (index: number) => {
-    if (index >= 0 && index < props.data.length) {
-        currentIndex.value = index;
-        emit('change', index);
-    }
-};
-
-watch(() => props.data, () => {
+function initNotice() {
     pause();
     initializeIndex();
     if (props.data.length <= 1) {
@@ -101,15 +64,56 @@ watch(() => props.data, () => {
     }
 
     play();
+}
+
+function initializeIndex() {
+    const index = Math.max(0, Math.min(props.initialIndex, props.data.length - 1));
+    currentIndex.value = props.data.length > 0 ? index : 0;
+};
+
+function next() {
+    if (props.data.length === 0) return;
+
+    const nextIndex = (currentIndex.value + 1) % props.data.length;
+    currentIndex.value = nextIndex;
+    emit('change', nextIndex);
+};
+
+function play() {
+    if (timer || props.data.length <= 1) return;
+
+    timer = window.setInterval(next, props.interval);
+};
+
+function pause() {
+    if (timer && props.stopOnHover) {
+        clearInterval(timer);
+        timer = null;
+    }
+};
+
+function goTo(index: number) {
+    if (index >= 0 && index < props.data.length) {
+        currentIndex.value = index;
+        emit('change', index);
+    }
+};
+
+watch(() => props.data, () => {
+    initNotice();
 }, { deep: true });
 
-onMounted(() => {
-    initializeIndex();
-    if (props.data.length <= 1) {
-        return;
-    }
+watch(() => [props.direction, props.animation, props.initialIndex], () => {
+    initNotice();
+});
 
+watch(() => [props.interval], () => {
+    pause();
     play();
+});
+
+onMounted(() => {
+    initNotice();
 });
 
 onUnmounted(() => {

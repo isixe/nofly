@@ -155,27 +155,27 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 		setCurVirtualIndex((v) => v + targetIndex);
 	}
 
-	const handlePrev = () => {
+	function prev() {
 		clearAutoplay();
 		moveToIndex(-1);
 		setupAutoplay();
-	};
+	}
 
-	const handleNext = () => {
+	function next() {
 		clearAutoplay();
 		moveToIndex(1);
 		setupAutoplay();
-	};
+	}
 
-	const handleJumpTo = (realIdx: number) => {
+	function jumpTo(realIdx: number) {
 		clearAutoplay();
 		const virtualIndex = realToVirtual(realIdx);
 		setIsTransitioning(true);
 		setCurVirtualIndex(virtualIndex);
 		setupAutoplay();
-	};
+	}
 
-	function handleTransitionEnd() {
+	function onTransitionEnd() {
 		const len = originItems.length;
 		if (len === 0) return;
 
@@ -253,8 +253,18 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 	}, [children]);
 
 	useEffect(() => {
+		initLayout();
+	}, [initLayout]);
+
+	useEffect(() => {
 		measureLayoutCache();
-	}, [curVirtualIndex]);
+		setIsTransitioning(false);
+	}, [itemWidth, gap]);
+
+	useEffect(() => {
+		clearAutoplay();
+		setupAutoplay();
+	}, [autoplay, interval]);
 
 	useEffect(() => {
 		if (typeof change === "function") {
@@ -283,7 +293,7 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 							alignItems: "center",
 							justifyContent: "center",
 						}}
-						onClick={handlePrev}>
+						onClick={prev}>
 						<svg
 							style={{ width: "60%", height: "60%" }}
 							viewBox="0 0 24 24"
@@ -310,7 +320,7 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 							alignItems: "center",
 							justifyContent: "center",
 						}}
-						onClick={handleNext}>
+						onClick={next}>
 						<svg
 							style={{ width: "60%", height: "60%" }}
 							viewBox="0 0 24 24"
@@ -334,7 +344,7 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 							padding: "20px 0",
 							...(trackStyle() as React.CSSProperties),
 						}}
-						onTransitionEnd={handleTransitionEnd}>
+						onTransitionEnd={onTransitionEnd}>
 						{virtualItems.map((child, idx) => (
 							<div
 								key={idx}
@@ -365,7 +375,7 @@ const HorizontalShowcaseCarousel: React.FC<Props> = ({
 						<span
 							key={idx}
 							className={`indicator ${idx === curRealIndex ? "active" : ""}`}
-							onClick={() => handleJumpTo(idx)}
+							onClick={() => jumpTo(idx)}
 							style={{
 								width: "10%",
 								height: 4,

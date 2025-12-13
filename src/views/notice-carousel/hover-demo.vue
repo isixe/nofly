@@ -12,7 +12,7 @@ const messages = ref([
 
 <template>
     <div class="notice-demo">
-        <NoticeCarousel :data="messages" :stopOnHover="false" />
+        <NoticeCarousel :data="messages" :stopOnHover="true" />
     </div>
 </template>
 

@@ -58,8 +58,8 @@ const InfiniteVerticalScroll: React.FC<InfiniteVerticalScrollProps> = ({
 		}
 	};
 
+	const handleMouseLeave = () => startScroll();
 	const handleMouseEnter = () => stopOnHover && stopScroll();
-	const handleMouseLeave = () => stopOnHover && startScroll();
 
 	useEffect(() => {
 		const initScroll = async () => {

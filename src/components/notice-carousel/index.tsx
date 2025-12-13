@@ -41,12 +41,27 @@ const NoticeCarousel = forwardRef<NoticeCarouselRef, NoticeCarouselProps>(
 		const [currentIndex, setCurrentIndex] = useState(0);
 		const timerRef = useRef<number | null>(null);
 
-		const initializeIndex = () => {
+		const handleClick = (item: any, index: number) => onClick?.(item, index);
+
+		function initNotice() {
+			initializeIndex();
+			if (data.length <= 1) return;
+
+			play();
+
+			return () => {
+				if (timerRef.current) {
+					clearInterval(timerRef.current);
+				}
+			};
+		}
+
+		function initializeIndex() {
 			const index = Math.max(0, Math.min(initialIndex, data.length - 1));
 			setCurrentIndex(data.length > 0 ? index : 0);
-		};
+		}
 
-		const next = () => {
+		function next() {
 			if (data.length === 0) return;
 
 			setCurrentIndex((prevIndex) => {
@@ -54,30 +69,26 @@ const NoticeCarousel = forwardRef<NoticeCarouselRef, NoticeCarouselProps>(
 				onChange?.(nextIndex);
 				return nextIndex;
 			});
-		};
+		}
 
-		const play = () => {
+		function play() {
 			if (timerRef.current || data.length <= 1) return;
 			timerRef.current = window.setInterval(next, interval);
-		};
+		}
 
-		const pause = () => {
+		function pause() {
 			if (timerRef.current && stopOnHover) {
 				clearInterval(timerRef.current);
 				timerRef.current = null;
 			}
-		};
+		}
 
-		const handleClick = (item: any, index: number) => {
-			onClick?.(item, index);
-		};
-
-		const goTo = (index: number) => {
+		function goTo(index: number) {
 			if (index >= 0 && index < data.length) {
 				setCurrentIndex(index);
 				onChange?.(index);
 			}
-		};
+		}
 
 		useImperativeHandle(ref, () => ({
 			play,
@@ -87,31 +98,12 @@ const NoticeCarousel = forwardRef<NoticeCarouselRef, NoticeCarouselProps>(
 		}));
 
 		useEffect(() => {
-			initializeIndex();
-			if (data.length <= 1) return;
-
-			play();
-
-			return () => {
-				if (timerRef.current) {
-					clearInterval(timerRef.current);
-				}
-			};
+			initNotice();
 		}, []);
 
 		useEffect(() => {
-			pause();
-			initializeIndex();
-			if (data.length <= 1) return;
-
-			play();
-
-			return () => {
-				if (timerRef.current) {
-					clearInterval(timerRef.current);
-				}
-			};
-		}, [data, interval]);
+			initNotice();
+		}, [data, interval, initialIndex, direction, animation]);
 
 		if (!data.length) return null;
 

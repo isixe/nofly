@@ -1,13 +1,13 @@
 <template>
     <div class="carousel-container">
         <div v-if="showArrows && originItems.length > 0" class="arrow-container">
-            <button class="arrow prev" :style="arrowStyle" @click="handlePrev">
+            <button class="arrow prev" :style="arrowStyle" @click="prev">
                 <svg style="width:60%;height:60%;transform:rotate(90deg)" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2">
                     <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
             </button>
-            <button class="arrow next" :style="arrowStyle" @click="handleNext">
+            <button class="arrow next" :style="arrowStyle" @click="next">
                 <svg style="width:60%;height:60%;transform:rotate(90deg)" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6"></polyline>
@@ -16,7 +16,7 @@
         </div>
 
         <div ref="viewportRef" class="viewport">
-            <div ref="trackRef" class="track" :style="trackStyle" @transitionend="handleTransitionEnd">
+            <div ref="trackRef" class="track" :style="trackStyle" @transitionend="onTransitionEnd">
                 <template v-for="(vnode, index) in virtualItems" :key="index">
                     <component :is="vnode" :style="itemStyle" @click="onClick(index)" />
                 </template>
@@ -25,7 +25,7 @@
 
         <div v-if="showIndicator && originItems.length > 0" class="indicator-bar" :style="indicatorStyle">
             <span v-for="(_, idx) in originItems" :key="idx" class="indicator" :class="{ active: idx === curRealIndex }"
-                @click="handleJumpTo(idx)" />
+                @click="jumpTo(idx)" />
         </div>
     </div>
 </template>
@@ -104,6 +104,7 @@ const itemStyle = computed(() => {
 
     return { height: props.itemHeight as string, width: '100%' };
 });
+
 const arrowStyle = computed(() => {
     if (typeof props.arrowSize === "number") {
         const size = props.arrowSize;
@@ -120,6 +121,7 @@ const arrowStyle = computed(() => {
     }
 
 });
+
 const indicatorStyle = computed(() => {
     const offset = '35px';
     if (props.indicatorPosition === 'left') {
@@ -127,6 +129,7 @@ const indicatorStyle = computed(() => {
     }
     return { right: offset, top: '50%', transform: 'translateY(-50%)' };
 });
+
 const trackStyle = computed(() => {
     const { viewportHeight, itemHeightPx, topOffset } = layoutCache.value;
 
@@ -146,47 +149,9 @@ const trackStyle = computed(() => {
     };
 });
 
-watch(curRealIndex, (value) => {
-    emit('change', value);
-}, { immediate: true });
-
-onMounted(async () => {
-    const slotTarget = slots.default ? slots.default() : [];
-    originItems.value = (slotTarget[0]?.children || []) as any[];
-
-    nextTick();
-
-    initLayout();
-    measureLayoutCache();
-
-    setupAutoplay();
-    window.addEventListener("resize", onResize);
-
-    viewportResizeObserver.value = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-            const height = entry.contentRect.height;
-            if (height === layoutCache.value.viewportHeight) return;
-
-            measureLayoutCache();
-            isTransitioning.value = false;
-        }
-    });
-    if (viewportRef.value) {
-        viewportResizeObserver.value.observe(viewportRef.value);
-    }
-});
-
-onUnmounted(() => {
-    clearAutoplay();
-    window.removeEventListener("resize", onResize);
-    if (viewportResizeObserver.value) {
-        viewportResizeObserver.value.disconnect();
-        viewportResizeObserver.value = null;
-    }
-});
-
 function initLayout() {
-    curRealIndex.value = props.initialIndex || 0
+    const real = Math.max(0, Math.min(props.initialIndex ?? 0, originItems.value.length - 1));
+    curRealIndex.value = real;
     curVirtualIndex.value = realToVirtual(curRealIndex.value);
 }
 
@@ -222,6 +187,7 @@ function realToVirtual(realPos: number) {
     const normalized = ((realPos % len) + len) % len;
     return normalized + cloneOffset;
 }
+
 function virtualToReal(virtualPos: number) {
     const len = originItems.value.length || 0;
     if (len === 0) return 0;
@@ -249,19 +215,19 @@ function moveToIndex(targetIndex: number, skipTransition = false) {
     curVirtualIndex.value = curVirtualIndex.value + targetIndex;
 }
 
-const handlePrev = () => {
+function prev() {
     clearAutoplay();
     moveToIndex(-1);
     setupAutoplay();
 };
 
-const handleNext = () => {
+function next() {
     clearAutoplay();
     moveToIndex(1);
     setupAutoplay();
 };
 
-const handleJumpTo = (realIdx: number) => {
+function jumpTo(realIdx: number) {
     clearAutoplay();
     const virtualIndex = realToVirtual(realIdx);
     isTransitioning.value = true;
@@ -269,7 +235,7 @@ const handleJumpTo = (realIdx: number) => {
     setupAutoplay();
 };
 
-function handleTransitionEnd() {
+function onTransitionEnd() {
     const len = originItems.value.length;
     if (len === 0) return;
 
@@ -296,6 +262,7 @@ function setupAutoplay() {
         moveToIndex(1);
     }, props.interval);
 }
+
 function clearAutoplay() {
     if (!autoplayTimerId.value) return;
 
@@ -325,6 +292,72 @@ function onClick(index: number) {
 
     emit('click', realIndex);
 }
+
+watch(curRealIndex, (value) => {
+    emit('change', value);
+}, { immediate: true });
+
+watch(
+    () => [props.itemHeight, props.gap],
+    async () => {
+        await nextTick();
+        measureLayoutCache();
+        isTransitioning.value = false;
+    }
+);
+
+watch(
+    () => props.initialIndex,
+    () => {
+        if (!originItems.value.length) return;
+
+        initLayout();
+        isTransitioning.value = false;
+    }
+);
+
+watch(
+    () => [props.autoplay, props.interval],
+    () => {
+        clearAutoplay();
+        setupAutoplay();
+    }
+);
+
+onMounted(async () => {
+    const slotTarget = slots.default ? slots.default() : [];
+    originItems.value = (slotTarget[0]?.children || []) as any[];
+
+    nextTick();
+
+    initLayout();
+    measureLayoutCache();
+
+    setupAutoplay();
+    window.addEventListener("resize", onResize);
+
+    viewportResizeObserver.value = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+            const height = entry.contentRect.height;
+            if (height === layoutCache.value.viewportHeight) return;
+
+            measureLayoutCache();
+            isTransitioning.value = false;
+        }
+    });
+    if (viewportRef.value) {
+        viewportResizeObserver.value.observe(viewportRef.value);
+    }
+});
+
+onUnmounted(() => {
+    clearAutoplay();
+    window.removeEventListener("resize", onResize);
+    if (viewportResizeObserver.value) {
+        viewportResizeObserver.value.disconnect();
+        viewportResizeObserver.value = null;
+    }
+});
 </script>
 
 <style scoped>
