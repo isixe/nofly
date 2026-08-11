@@ -41,6 +41,7 @@ export default defineConfig({
 						],
 					},
 					{ text: "通知轮播", link: "/notice-carousel/index" },
+					{ text: "瀑布流", link: "/waterfall/index" },
 				],
 			},
 		],
